@@ -38,19 +38,10 @@ function check_required_key() {
   done
 }
 
-function additional_config() {
-  # $1 = first arg = file_path
-  yq eval ". += { \"environment\": \"$ENVIRONMENT\" }" "$1" > "$1.tmp"
-  yq eval ". += { \"type\": \"$TYPE\" }" "$1" > "$1.tmp"
-  mv "$1.tmp" "$1"
-}
-
 result=($(clone_config_file))
 clone_path=result[0]
 file_path=result[1]
-
 check_required_key $file_path
-additional_config $file_path
 
 # Return config files content
 cat $file_path

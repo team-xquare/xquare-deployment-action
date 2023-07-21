@@ -31,19 +31,17 @@ runs:
   using: 'composite'
   steps:
 
-    - name: Check config values and set environment values
-      id: config_script
-      shell: bash
-      run: |
-          result=$(bash config_script.sh)
-          echo "::set-output name=config_file::$result"
+    # - name: Check config values and set environment values
+    #   id: config_script
+    #   shell: bash
+    #   run: $GITHUB_ACTION_PATH/config_script.sh
 
     - name: Login to ECR
       id: ecr
       uses: elgohr/ecr-login-action@master
       with:
-        access_key: ${{ secrets.AWS_ACCESS_KEY }}
-        secret_access_key: ${{ secrets.AWS_SECRET_KEY }}
+        access_key: ${{ secrets.TEST_AWS_ACCESS_KEY }}
+        secret_access_key: ${{ secrets.TEST_AWS_SECRET_KEY }}
         region: ${{ secrets.AWS_REGION }}
 
     - name: Get the tag if exist
@@ -68,14 +66,14 @@ runs:
           CLOUD_CONFIG_PASSWORD=${{ secrets.CLOUD_CONFIG_PASSWORD }}
           PROFILE=${{ inputs.environment }}
 
-    - name: Check required config exists
-      id: check-yaml
-      run: $GITHUB_ACTION_PATH/check_config.sh
-      shell: bash
-      env:
-        CONFIG_FILE_PATH: ${{ inputs.config_file_path }}
-        TARGET_BANCH: ${{ GITHUB_REF#refs/heads/ }}
-        GIT_URL: ${{ $GITHUB_SERVER_URL }}/${{ $GITHUB_REPOSITORY }}
+    # - name: Check required config exists
+    #   id: check-yaml
+    #   run: $GITHUB_ACTION_PATH/check_config.sh
+    #   shell: bash
+    #   env:
+    #     CONFIG_FILE_PATH: ${{ inputs.config_file_path }}
+    #     TARGET_BANCH: ${{ GITHUB_REF#refs/heads/ }}
+    #     GIT_URL: ${{ $GITHUB_SERVER_URL }}/${{ $GITHUB_REPOSITORY }}
 
     - name: Repository Dispatch
       uses: peter-evans/repository-dispatch@v1
@@ -89,7 +87,5 @@ runs:
             "version" : "${{ version_tag }}",
             "service_name" : "${{ inputs.service_name }}",
             "service_type" : "${{ inputs.service_type }}",
-            "environment" : "${{ inputs.environment }}",
-            "git_url" : "${{ $GITHUB_SERVER_URL }}/${{ $GITHUB_REPOSITORY }}",
-            "config" : "${{ config_file }}"
+            "environment" : "${{ inputs.environment }}"
           }'
