@@ -1,0 +1,95 @@
+name: 'Xquare deployment'
+author: 'Xquare'
+branding:
+  icon: 'Xquare'
+  color: 'Purple'
+
+description: 'Tasks to deploy to xquare server'
+inputs:
+  service_name:
+    description: 'Name of project'
+    required: true
+  service_type:
+    description: 'Type of project (ex. be, fe)'
+    required: true
+  environment:
+    description: 'Environment classification for servers (prod/stag)' 
+    required: true
+  config_file_path:
+    description: 'Path of Xquare Config file'
+    default: '.xquare/config.yaml'
+
+outputs:
+  tag:
+    description: 'Is the tag, which was pushed'
+    value: ${{ steps.docker-publish.outputs.tag }}
+  digest:
+    description: 'Is the digest of the image, which was pushed'
+    value: ${{ steps.docker-publish.outputs.digest }}
+
+runs:
+  using: 'composite'
+  steps:
+
+    - name: Check config values and set environment values
+      id: config_script
+      shell: bash
+      run: |
+          result=$(bash config_script.sh)
+          echo "::set-output name=config_file::$result"
+
+    - name: Login to ECR
+      id: ecr
+      uses: elgohr/ecr-login-action@master
+      with:
+        access_key: ${{ secrets.AWS_ACCESS_KEY }}
+        secret_access_key: ${{ secrets.AWS_SECRET_KEY }}
+        region: ${{ secrets.AWS_REGION }}
+
+    - name: Get the tag if exist
+      id: get_tag
+      run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            echo ::set-output name=version_tag::$(echo $GITHUB_REF | cut -d / -f 3)
+          else
+            echo ::set-output name=version_tag::$(github.sha)
+          fi
+        
+    - name: Publish to Registry If Taged
+      uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: ${{ inputs.service_name }}-${{ inputs.service_type }}
+        username: ${{ steps.ecr.outputs.username }}
+        password: ${{ steps.ecr.outputs.password }}
+        registry: ${{ steps.ecr.outputs.registry }}
+        tags: ${{ version_tag }}
+        buildargs: |
+          CLOUD_CONFIG_USERNAME=${{ secrets.CLOUD_CONFIG_USERNAME }}
+          CLOUD_CONFIG_PASSWORD=${{ secrets.CLOUD_CONFIG_PASSWORD }}
+          PROFILE=${{ inputs.environment }}
+
+    - name: Check required config exists
+      id: check-yaml
+      run: $GITHUB_ACTION_PATH/check_config.sh
+      shell: bash
+      env:
+        CONFIG_FILE_PATH: ${{ inputs.config_file_path }}
+        TARGET_BANCH: ${{ GITHUB_REF#refs/heads/ }}
+        GIT_URL: ${{ $GITHUB_SERVER_URL }}/${{ $GITHUB_REPOSITORY }}
+
+    - name: Repository Dispatch
+      uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ secrets.GITOPS_DEPLOY_TOKEN }}
+        repository: team-xquare/xquare-gitops-repo
+        event-type: update_image
+        client-payload: |
+          '{
+            "ref" : "${{ github.ref }}", 
+            "version" : "${{ version_tag }}",
+            "service_name" : "${{ inputs.service_name }}",
+            "service_type" : "${{ inputs.service_type }}",
+            "environment" : "${{ inputs.environment }}",
+            "git_url" : "${{ $GITHUB_SERVER_URL }}/${{ $GITHUB_REPOSITORY }}",
+            "config" : "${{ config_file }}"
+          }'
