@@ -41,11 +41,12 @@ runs:
       uses: elgohr/ecr-login-action@master
       with:
         access_key: ${{ secrets.TEST_AWS_ACCESS_KEY }}
-        secret_access_key: ${{ secrets.TEST_AWS_SECRET_KEY }}
+        secret_access_key: ${{ secrets.TEST_AWS_PRIAVTE_KEY }}
         region: ${{ secrets.AWS_REGION }}
 
     - name: Get the tag if exist
       id: get_tag
+      shell: bash
       run: |
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             echo ::set-output name=version_tag::$(echo $GITHUB_REF | cut -d / -f 3)
