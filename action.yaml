@@ -44,9 +44,8 @@ runs:
       shell: bash
       run: |
         config=$(cat ${{ inputs.config_file_path }})
-        echo $config
-        echo "::set-output name=service_name::$(echo $config | yq e 'config.name' -)
-        echo "::set-output name=service_prefix::$(echo $config | yq e 'config.prefix' -)
+        echo "service_name=$(yq eval ".config.name" <<< "$config")" >> $GITHUB_OUTPUT
+        echo "service_prefix=$(yq eval ".config.prefix" <<< "$config")" >> $GITHUB_OUTPUT
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
@@ -66,9 +65,9 @@ runs:
       shell: bash
       run: |
           if [[ $GITHUB_REF == refs/tags/* ]]; then
-            echo ::set-output name=version_tag::$(echo $GITHUB_REF | cut -d / -f 3)
+            echo "version_tag=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_OUTPUT
           else
-            echo ::set-output name=version_tag::stag-${{ github.sha }}
+            echo "version_tag=stag-${{ github.sha }}" >> $GITHUB_OUTPUT
           fi
 
     - name: Login to Amazon ECR
@@ -79,7 +78,7 @@ runs:
       id: docker
       shell: bash
       run: |
-        repo="${{ steps.ecr.outputs.registry }}/${{ steps.read-config.outputs.service_name }}-${{ inputs.service_type }}-${{ inputs.environmemt }}:${{ steps.tag.outputs.version_tag }}"
+        repo="${{ steps.ecr.outputs.registry }}/${{ steps.read-config.outputs.service_name }}-${{ inputs.service_type }}-${{ inputs.environment }}:${{ steps.tag.outputs.version_tag }}"
 
         docker build -t $repo \
           --build-arg CLOUD_CONFIG_USERNAME=${{ env.XQUARE_CLOUD_CONFIG_USERNAME }} \
