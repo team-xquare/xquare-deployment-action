@@ -19,14 +19,6 @@ inputs:
     description: 'Path of Xquare Config file'
     default: '.xquare/config.yaml'
 
-outputs:
-  tag:
-    description: 'Is the tag, which was pushed'
-    value: ${{ steps.docker-publish.outputs.tag }}
-  digest:
-    description: 'Is the digest of the image, which was pushed'
-    value: ${{ steps.docker-publish.outputs.digest }}
-
 runs:
   using: 'composite'
   steps:
@@ -36,13 +28,21 @@ runs:
     #   shell: bash
     #   run: $GITHUB_ACTION_PATH/config_script.sh
 
-    - name: Login to ECR
-      id: ecr
-      uses: elgohr/ecr-login-action@master
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
       with:
-        access_key: ${{ secrets.TEST_AWS_ACCESS_KEY }}
-        secret_access_key: ${{ secrets.TEST_AWS_PRIAVTE_KEY }}
-        region: ${{ secrets.AWS_REGION }}
+        role-to-assume: arn:aws:iam::471407337433:user/ecr-iam
+
+    - name: Step name
+      uses: aws-actions/aws-secretsmanager-get-secrets@v1
+      with:
+        secret-ids:
+          CLOUD_CONFIG_USERNAME
+          CLOUD_CONFIG_PASSWORD
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
 
     - name: Get the tag if exist
       id: get_tag
