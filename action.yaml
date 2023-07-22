@@ -35,7 +35,9 @@ runs:
         CONFIG_FILE_PATH: ${{ inputs.config_file_path }}
         TARGET_BANCH: ${{ github.base_ref }}
         GIT_URL: "${{ env.GITHUB_SERVER_URL }}/${{ env.GITHUB_REPOSITORY }}"
-      run: $GITHUB_ACTION_PATH/check_config.sh
+      run: |
+        chmod +x $GITHUB_ACTION_PATH/check_config.sh
+        $GITHUB_ACTION_PATH/check_config.sh
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
