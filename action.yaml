@@ -69,6 +69,8 @@ runs:
         aws ecr describe-repositories --repository-names ${{ env.ECR_REPOSITORY_NAME }}
         exit_code=$?
         set -e
+        echo $exit_code
+        echo $($exit_code != 0 ? 'false' : 'true')
         echo "ecr_exists=$($exit_code != 0 ? 'false' : 'true')" >> $GITHUB_OUTPUT
 
     - name: Create ECR repository if not exists
@@ -89,7 +91,7 @@ runs:
             "repository_name" : "${{ env.ECR_REPOSITORY_NAME }}",
             "service_name" : "${{ steps.read-config.outputs.service_name }}",
             "service_type" : "${{ inputs.service_type }}",
-              "environment" : "${{ inputs.environment }}"
+            "environment" : "${{ inputs.environment }}"
           }
 
     - name: Get the branch tag if exist
