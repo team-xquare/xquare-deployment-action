@@ -1,7 +1,7 @@
 name: 'Xquare deployment'
 author: 'Xquare'
 branding:
-  icon: 'Xquare'
+  icon: 'x-square'
   color: 'Purple'
 
 description: 'Tasks to deploy to xquare server'
@@ -18,8 +18,11 @@ inputs:
   config_file_path:
     description: 'Path of Xquare Config file'
     default: '.xquare/config.yaml'
+  xquare_role_arn:
+    description: 'Role arn to assume xquare credentials. If you want to distribute to Xquare, please contact administrator and check the value.'
+    required: true
   gitops_deploy_token:
-    description: 'GitOps deploy token to repository dispatch, set this as \$\{{ secrets.GITOPS_DEPLOY_TOKEN }}' 
+    description: 'GitOps deploy token to repository dispatch, set this as your `secrets.GITOPS_DEPLOY_TOKEN`' 
     required: true
 
 runs:
@@ -34,15 +37,15 @@ runs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
-        role-to-assume: arn:aws:iam::471407337433:user/ecr-iam
-        aws-region: ap-norteast-2
+        role-to-assume: ${{ inputs.xquare_role_arn }}
+        aws-region: ap-northeast-2
 
     - name: Step name
       uses: aws-actions/aws-secretsmanager-get-secrets@v1
       with:
         secret-ids:
-          CLOUD_CONFIG_USERNAME
-          CLOUD_CONFIG_PASSWORD
+          CLOUD_CONFIG_USERNAME,xquare/cloud-config
+          CLOUD_CONFIG_PASSWORD,xquare/cloud-config
 
     - name: Get the tag if exist
       id: get_tag
