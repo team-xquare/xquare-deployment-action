@@ -1,0 +1,36 @@
+name: gradle-example
+
+on:
+  push:
+    branches: [ YOUR_BRANCH_NAME ]
+
+jobs:
+  build:
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+
+      - name: Build Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: |
+            build
+            --build-cache
+            --no-daemon
+
+      - name: Deploy to xquare
+        uses: team-xquare/xquare-deployment-action@master 
+        with:
+          service_type: be
+          environment: prod
+          xquare_role_arn: ${{ secrets.XQUARE_ROLE_ARN }}
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}

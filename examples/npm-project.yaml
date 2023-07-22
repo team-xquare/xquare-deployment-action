@@ -1,0 +1,42 @@
+name: npm-example
+ 
+on:
+  push:
+    branches: [ YOUR_BRANCH_NAME ]
+ 
+jobs:
+  build: 
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: NodeJS Installation ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: build
+        run: npm run build
+        working-directory: ./src
+          
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+
+      - name: Deploy to xquare
+        uses: team-xquare/xquare-deployment-action@master 
+        with:
+          service_type: YOUR_SERVICE_TYPE
+          environment: YOUR_ENVIRONMENT
+          xquare_role_arn: ${{ secrets.XQUARE_ROLE_ARN }}
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
