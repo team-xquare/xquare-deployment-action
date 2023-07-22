@@ -59,7 +59,7 @@ runs:
 
     - name: Set ECR Repository name Env
       shell: bash
-      run: echo "ECR_REPOSITORY_NAME=${{ inputs.service_name }}-${{ inputs.service_type }}-${{ inputs.environment }}" >> $GITHUB_ENV
+      run: echo "ECR_REPOSITORY_NAME=${{ steps.read-config.outputs.service_name }}-${{ inputs.service_type }}-${{ inputs.environment }}" >> $GITHUB_ENV
 
     - name: Check if ECR repository exists
       id: ecr_exists
