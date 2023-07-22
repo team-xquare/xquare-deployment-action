@@ -57,31 +57,29 @@ runs:
         parse-json-secrets: true
 
     - name: Get the tag if exist
-      id: get_tag
+      id: tag
       shell: bash
       run: |
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             echo ::set-output name=version_tag::$(echo $GITHUB_REF | cut -d / -f 3)
           else
-            echo ::set-output name=version_tag::$(github.sha)
+            echo ::set-output name=version_tag::${{ github.sha }}
           fi
 
     - name: Login to Amazon ECR
       id: ecr
       uses: aws-actions/amazon-ecr-login@v1
-        
-    - name: Publish to Registry If Taged
-      uses: elgohr/Publish-Docker-Github-Action@master
-      with:
-        name: ${{ inputs.service_name }}-${{ inputs.service_type }}-${{ inputs.environment }}
-        username: ${{ steps.ecr.outputs.username }}
-        password: ${{ steps.ecr.outputs.password }}
-        registry: ${{ steps.ecr.outputs.registry }}
-        tags: ${{ steps.get_tag.outputs.version_tag }}
-        buildargs: |
-          CLOUD_CONFIG_USERNAME=${{ env.XQUARE_CLOUD_CONFIG_USERNAME }}
-          CLOUD_CONFIG_PASSWORD=${{ env.XQUARE_CLOUD_CONFIG_PASSWORD }}
-          PROFILE=${{ inputs.environment }}
+
+    - name: Docker Build and push
+      id: docker
+      shell: bash
+      run: |
+        repo="${{ steps.ecr.outputs.registry }}:${{ steps.tag.outputs.version_tag }}"
+        docker build -t $repo \
+          --build-arg CLOUD_CONFIG_USERNAME=${{ env.XQUARE_CLOUD_CONFIG_USERNAME }} \
+          --build-arg CLOUD_CONFIG_PASSWORD=${{ env.XQUARE_CLOUD_CONFIG_PASSWORD }} \
+          --build-arg PROFILE=${{ inputs.environment }} .
+        docker push $repo
 
     - name: Repository Dispatch
       uses: peter-evans/repository-dispatch@v1
