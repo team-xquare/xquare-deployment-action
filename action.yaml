@@ -33,11 +33,19 @@ runs:
       shell: bash
       env:
         GIT_REPO: ${{ github.repository }}
-        TARGET_BANCH: ${{ github.base_ref }}
+        TARGET_BRANCH: ${{ github.ref }}
         CONFIG_FILE_PATH: ${{ inputs.config_file_path }}
       run: |
         chmod +x $GITHUB_ACTION_PATH/check_config.sh
         $GITHUB_ACTION_PATH/check_config.sh
+
+    - name: Read config file
+      id: read-config
+      shell: bash
+      run: |
+        config=$(cat ${{ inputs.config_file_path }})
+        echo "::set-output name=service_name::$(echo $config | yq e 'config.name' -)
+        echo "::set-output name=service_prefix::$(echo $config | yq e 'config.prefix' -)
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
@@ -70,20 +78,15 @@ runs:
       id: docker
       shell: bash
       run: |
-        repo="${{ steps.ecr.outputs.registry }}:${{ steps.tag.outputs.version_tag }}"
+        repo="${{ steps.ecr.outputs.registry }}\" \
+          "${{ steps.read-config.outputs.service_name }}-${{ inputs.service_type }}-${{ inputs.environment }}" \
+          ":${{ steps.tag.outputs.version_tag }}"
+
         docker build -t $repo \
           --build-arg CLOUD_CONFIG_USERNAME=${{ env.XQUARE_CLOUD_CONFIG_USERNAME }} \
           --build-arg CLOUD_CONFIG_PASSWORD=${{ env.XQUARE_CLOUD_CONFIG_PASSWORD }} \
           --build-arg PROFILE=${{ inputs.environment }} .
         docker push $repo
-
-    - name: Read config file
-      id: read-config
-      shell: bash
-      run: |
-        config=$(cat ${{ inputs.config_file_path }})
-        echo "::set-output name=service_name::$(echo $config | yq e 'config.name' -)
-        echo "::set-output name=service_prefix::$(echo $config | yq e 'config.prefix' -)
 
     - name: Repository Dispatch
       uses: peter-evans/repository-dispatch@v1
