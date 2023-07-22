@@ -7,7 +7,7 @@ branding:
 description: 'Tasks to deploy to xquare server'
 inputs:
   service_type:
-    description: 'Type of project (ex. be, fe)'
+    description: 'Type of service (ex. be, fe)'
     required: true
   environment:
     description: 'Environment classification for servers (prod/stag)' 
@@ -28,7 +28,7 @@ runs:
     - name: Install yq
       uses: mikefarah/yq@v4
 
-    - name: Check config values and set environment values
+    - name: Check config values
       id: check-config
       shell: bash
       env:
@@ -53,14 +53,46 @@ runs:
         role-to-assume: ${{ inputs.xquare_role_arn }}
         aws-region: ap-northeast-2
 
-    - name: Get Secrets
-      uses: aws-actions/aws-secretsmanager-get-secrets@v1
-      with:
-        secret-ids:
-          xquare/cloud-config
-        parse-json-secrets: true
+    - name: Login to Amazon ECR
+      id: ecr
+      uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Get the tag if exist
+    - name: Set ECR Repository name Env
+      shell: bash
+      run: echo "ECR_REPOSITORY_NAME=${{ inputs.service_name }}-${{ inputs.service_type }}-${{ inputs.environment }}" >> $GITHUB_ENV
+
+    - name: Check if ECR repository exists
+      id: ecr_exists
+      shell: bash
+      run: |
+        set +e
+        aws ecr describe-repositories --repository-names ${{ env.ECR_REPOSITORY_NAME }}
+        exit_code=$?
+        set -e
+        echo "ecr_exists=$($exit_code != 0 ? 'false' : 'true')" >> $GITHUB_OUTPUT
+
+    - name: Create ECR repository if not exists
+      if: steps.ecr_exists.outputs.ecr_exists == 'false'
+      shell: bash
+      run: |
+        aws ecr create-repository --repository-name ${{ env.ECR_REPOSITORY_NAME }}
+
+    - name: Terraform Repository Dispatch if not exists
+      if: steps.ecr_exists.outputs.ecr_exists == 'false'
+      uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ inputs.github_token }}
+        repository: team-xquare/xquare-infrastructure-global
+        event-type: add_ecr
+        client-payload: |
+          {
+            "repository_name" : "${{ env.ECR_REPOSITORY_NAME }}",
+            "service_name" : "${{ steps.read-config.outputs.service_name }}",
+            "service_type" : "${{ inputs.service_type }}",
+              "environment" : "${{ inputs.environment }}"
+          }
+
+    - name: Get the branch tag if exist
       id: tag
       shell: bash
       run: |
@@ -70,16 +102,18 @@ runs:
             echo "version_tag=stag-${{ github.sha }}" >> $GITHUB_OUTPUT
           fi
 
-    - name: Login to Amazon ECR
-      id: ecr
-      uses: aws-actions/amazon-ecr-login@v1
+    - name: Get Secrets
+      uses: aws-actions/aws-secretsmanager-get-secrets@v1
+      with:
+        secret-ids:
+          xquare/cloud-config
+        parse-json-secrets: true
 
     - name: Docker Build and push
       id: docker
       shell: bash
       run: |
-        repo="${{ steps.ecr.outputs.registry }}/${{ steps.read-config.outputs.service_name }}-${{ inputs.service_type }}-${{ inputs.environment }}:${{ steps.tag.outputs.version_tag }}"
-
+        repo="${{ steps.ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:${{ steps.tag.outputs.version_tag }}"
         docker build -t $repo \
           --build-arg CLOUD_CONFIG_USERNAME=${{ env.XQUARE_CLOUD_CONFIG_USERNAME }} \
           --build-arg CLOUD_CONFIG_PASSWORD=${{ env.XQUARE_CLOUD_CONFIG_PASSWORD }} \
