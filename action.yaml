@@ -25,6 +25,8 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Install yq
+      uses: mikefarah/yq@v4
 
     - name: Check config values and set environment values
       id: check-config
@@ -88,7 +90,7 @@ runs:
         client-payload: |
           '{
             "ref" : "${{ github.ref }}", 
-            "version" : "${{ steps.get_tag.outputs.version_tag }}",
+            "image_tag" : "${{ steps.get_tag.outputs.version_tag }}",
             "service_name" : "${{ steps.read-config.outputs.service_name }}",
             "service_prefix" : "${{ steps.read-config.outputs.service_prefix }}",
             "service_type" : "${{ inputs.service_type }}",

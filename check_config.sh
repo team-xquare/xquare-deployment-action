@@ -23,9 +23,6 @@ function clone_config_file() {
 }
 
 function check_required_key() {
-  # Check if the required config keys exist in the YAML file by yq
-  sudo apt update
-  sudo apt install -y yq
 
   required_keys=("config.name" "config.prefix")
 
