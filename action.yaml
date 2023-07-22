@@ -32,9 +32,9 @@ runs:
       id: check-config
       shell: bash
       env:
-        CONFIG_FILE_PATH: ${{ inputs.config_file_path }}
+        GIT_REPO: ${{ github.repository }}
         TARGET_BANCH: ${{ github.base_ref }}
-        GIT_URL: "${{ env.GITHUB_SERVER_URL }}/${{ env.GITHUB_REPOSITORY }}"
+        CONFIG_FILE_PATH: ${{ inputs.config_file_path }}
       run: |
         chmod +x $GITHUB_ACTION_PATH/check_config.sh
         $GITHUB_ACTION_PATH/check_config.sh
