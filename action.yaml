@@ -6,9 +6,6 @@ branding:
 
 description: 'Tasks to deploy to xquare server'
 inputs:
-  service_name:
-    description: 'Name of project'
-    required: true
   service_type:
     description: 'Type of project (ex. be, fe)'
     required: true
@@ -32,7 +29,7 @@ runs:
     - name: Check config values and set environment values
       id: check-config
       shell: bash
-      run: $GITHUB_ACTION_PATH/check_config.sh
+      run: $GITHUB_ACTION_PATH/check_config.sh > config.yaml
         CONFIG_FILE_PATH: ${{ inputs.config_file_path }}
         TARGET_BANCH: ${{ GITHUB_REF#refs/heads/ }}
         GIT_URL: ${{ $GITHUB_SERVER_URL }}/${{ $GITHUB_REPOSITORY }}
@@ -75,6 +72,13 @@ runs:
           --build-arg PROFILE=${{ inputs.environment }} .
         docker push $repo
 
+    - name: Read config file
+      id: read-config
+      run: |
+        config=$(cat ${{ inputs.config_file_path }})
+        echo "::set-output name=service_name::$(echo $config | yq e 'config.name' -)
+        echo "::set-output name=service_prefix::$(echo $config | yq e 'config.prefix' -)
+
     - name: Repository Dispatch
       uses: peter-evans/repository-dispatch@v1
       with:
@@ -85,7 +89,8 @@ runs:
           '{
             "ref" : "${{ github.ref }}", 
             "version" : "${{ steps.get_tag.outputs.version_tag }}",
-            "service_name" : "${{ inputs.service_name }}",
+            "service_name" : "${{ steps.read-config.outputs.service_name }}",
+            "service_prefix" : "${{ steps.read-config.outputs.service_prefix }}",
             "service_type" : "${{ inputs.service_type }}",
             "environment" : "${{ inputs.environment }}"
           }'

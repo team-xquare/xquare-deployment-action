@@ -27,7 +27,7 @@ function check_required_key() {
   sudo apt update
   sudo apt install -y yq
 
-  required_keys=("config.name" "config.imageTag" "config.containerPort" "config.prefix")
+  required_keys=("config.name" "config.prefix")
 
   # $1 = first arg = file_path
   for required_key in "${required_keys[@]}"; do
