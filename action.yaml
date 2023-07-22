@@ -1,7 +1,7 @@
 name: 'Xquare deployment'
 author: 'Xquare'
 branding:
-  icon: 'x-square'
+  icon: 'Xquare'
   color: 'Purple'
 
 description: 'Tasks to deploy to xquare server'
@@ -29,19 +29,13 @@ runs:
   using: 'composite'
   steps:
 
-    # - name: Check config values and set environment values
-    #   id: config_script
-    #   shell: bash
-    #   run: $GITHUB_ACTION_PATH/config_script.sh
-
-    # - name: Check required config exists
-    #   id: check-yaml
-    #   run: $GITHUB_ACTION_PATH/check_config.sh
-    #   shell: bash
-    #   env:
-    #     CONFIG_FILE_PATH: ${{ inputs.config_file_path }}
-    #     TARGET_BANCH: ${{ GITHUB_REF#refs/heads/ }}
-    #     GIT_URL: ${{ $GITHUB_SERVER_URL }}/${{ $GITHUB_REPOSITORY }}
+    - name: Check config values and set environment values
+      id: check-config
+      shell: bash
+      run: $GITHUB_ACTION_PATH/check_config.sh
+        CONFIG_FILE_PATH: ${{ inputs.config_file_path }}
+        TARGET_BANCH: ${{ GITHUB_REF#refs/heads/ }}
+        GIT_URL: ${{ $GITHUB_SERVER_URL }}/${{ $GITHUB_REPOSITORY }}
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
