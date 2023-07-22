@@ -40,8 +40,5 @@ clone_path=result[0]
 file_path=result[1]
 check_required_key $file_path
 
-# Return config files content
-cat $file_path
-
 # Remove tmp clone directory
 rm -rf $clone_path
