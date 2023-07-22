@@ -44,6 +44,7 @@ runs:
       shell: bash
       run: |
         config=$(cat ${{ inputs.config_file_path }})
+        echo $config
         echo "::set-output name=service_name::$(echo $config | yq e 'config.name' -)
         echo "::set-output name=service_prefix::$(echo $config | yq e 'config.prefix' -)
 
@@ -78,9 +79,7 @@ runs:
       id: docker
       shell: bash
       run: |
-        repo="${{ steps.ecr.outputs.registry }}\" \
-          "${{ steps.read-config.outputs.service_name }}-${{ inputs.service_type }}-${{ inputs.environment }}" \
-          ":${{ steps.tag.outputs.version_tag }}"
+        repo="${{ steps.ecr.outputs.registry }}/${{ steps.read-config.outputs.service_name }}-${{ inputs.service_type }}-${{ inputs.environmemt }}:${{ steps.tag.outputs.version_tag }}"
 
         docker build -t $repo \
           --build-arg CLOUD_CONFIG_USERNAME=${{ env.XQUARE_CLOUD_CONFIG_USERNAME }} \
