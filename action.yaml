@@ -18,6 +18,9 @@ inputs:
   config_file_path:
     description: 'Path of Xquare Config file'
     default: '.xquare/config.yaml'
+  gitops_deploy_token:
+    description: 'GitOps deploy token to repository dispatch, set this as \$\{{ secrets.GITOPS_DEPLOY_TOKEN }}' 
+    required: true
 
 runs:
   using: 'composite'
@@ -32,6 +35,7 @@ runs:
       uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: arn:aws:iam::471407337433:user/ecr-iam
+        aws-region: ap-norteast-2
 
     - name: Step name
       uses: aws-actions/aws-secretsmanager-get-secrets@v1
@@ -39,10 +43,6 @@ runs:
         secret-ids:
           CLOUD_CONFIG_USERNAME
           CLOUD_CONFIG_PASSWORD
-
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
 
     - name: Get the tag if exist
       id: get_tag
@@ -61,10 +61,10 @@ runs:
         username: ${{ steps.ecr.outputs.username }}
         password: ${{ steps.ecr.outputs.password }}
         registry: ${{ steps.ecr.outputs.registry }}
-        tags: ${{ version_tag }}
+        tags: ${{ steps.get_tag.outputs.version_tag }}
         buildargs: |
-          CLOUD_CONFIG_USERNAME=${{ secrets.CLOUD_CONFIG_USERNAME }}
-          CLOUD_CONFIG_PASSWORD=${{ secrets.CLOUD_CONFIG_PASSWORD }}
+          CLOUD_CONFIG_USERNAME=${{ env.CLOUD_CONFIG_USERNAME }}
+          CLOUD_CONFIG_PASSWORD=${{ env.CLOUD_CONFIG_PASSWORD }}
           PROFILE=${{ inputs.environment }}
 
     # - name: Check required config exists
@@ -79,13 +79,13 @@ runs:
     - name: Repository Dispatch
       uses: peter-evans/repository-dispatch@v1
       with:
-        token: ${{ secrets.GITOPS_DEPLOY_TOKEN }}
+        token: ${{ inputs.gitops_deploy_token }}
         repository: team-xquare/xquare-gitops-repo
         event-type: update_image
         client-payload: |
           '{
             "ref" : "${{ github.ref }}", 
-            "version" : "${{ version_tag }}",
+            "version" : "${{ steps.get_tag.outputs.version_tag }}",
             "service_name" : "${{ inputs.service_name }}",
             "service_type" : "${{ inputs.service_type }}",
             "environment" : "${{ inputs.environment }}"
