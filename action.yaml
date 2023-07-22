@@ -18,8 +18,8 @@ inputs:
   xquare_role_arn:
     description: 'Role arn to assume xquare credentials. If you want to distribute to Xquare, please contact administrator and check the value.'
     required: true
-  gitops_deploy_token:
-    description: 'GitOps deploy token to repository dispatch, set this as your `secrets.GITOPS_DEPLOY_TOKEN`' 
+  github_token:
+    description: 'Github personal access token to repository dispatch. It should has a `repo` scope. Detail on [Github Document](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)' 
     required: true
 
 runs:
@@ -89,15 +89,15 @@ runs:
     - name: Repository Dispatch
       uses: peter-evans/repository-dispatch@v1
       with:
-        token: ${{ inputs.gitops_deploy_token }}
+        token: ${{ inputs.github_token }}
         repository: team-xquare/xquare-gitops-repo
         event-type: update_image
         client-payload: |
-          '{
+          {
             "ref" : "${{ github.ref }}", 
             "image_tag" : "${{ steps.get_tag.outputs.version_tag }}",
             "service_name" : "${{ steps.read-config.outputs.service_name }}",
             "service_prefix" : "${{ steps.read-config.outputs.service_prefix }}",
             "service_type" : "${{ inputs.service_type }}",
             "environment" : "${{ inputs.environment }}"
-          }'
+          }
