@@ -60,7 +60,6 @@ runs:
       run: echo "ECR_REPOSITORY_NAME=${{ steps.read-config.outputs.service_name }}-${{ steps.read-config.outputs.service_type }}-${{ inputs.environment }}" >> $GITHUB_ENV
 
     - name: Check if ECR repository exists
-      id: ecr_exists
       shell: bash
       run: |
         set +e
@@ -68,9 +67,9 @@ runs:
         exit_code=$?
         set -e
         if [ $exit_code -ne 0 ]; then
-          echo "ecr_exists='false'" >> $GITHUB_ENV
+          echo "ecr_exists=false" >> $GITHUB_ENV
         else
-          echo "ecr_exists='true'" >> $GITHUB_ENV
+          echo "ecr_exists=true" >> $GITHUB_ENV
         fi
 
     - name: Create ECR repository if not exists
