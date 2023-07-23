@@ -101,9 +101,9 @@ runs:
       shell: bash
       run: |
           if [[ $GITHUB_REF == refs/tags/* ]]; then
-            echo "version_tag=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_OUTPUT
+            echo "version_tag=${{ inputs.environment }}-$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_OUTPUT
           else
-            echo "version_tag=stag-${{ github.sha }}" >> $GITHUB_OUTPUT
+            echo "version_tag=${{ inputs.environment }}-${{ github.sha }}" >> $GITHUB_OUTPUT
           fi
 
     - name: Get Secrets
