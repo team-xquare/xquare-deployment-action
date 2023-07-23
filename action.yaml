@@ -109,18 +109,21 @@ runs:
       id: docker
       shell: bash
       run: |
-        IFS=$'\n' read -d '' -ra LINES <<< "${{ inputs.build_args }}"
-        NUM_LINES=${#LINES[@]}
-        echo "Number of lines: $NUM_LINES"
+        repo="${{ steps.ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:${{ steps.tag.outputs.version_tag }}"
+        if [ -z "${{ inputs.buildargs }}" ]; then
+          docker build -t $repo .
+        else
+          IFS=$'\n' read -d '' -ra LINES <<< "${{ inputs.buildargs }}"
+          
+          NUM_LINES=${#LINES[@]}
+          echo "Number of lines: $NUM_LINES"
+          BUILD_ARGS=""
+          for line in "${LINES[@]}"; do
+            BUILD_ARGS="$BUILD_ARGS --build-arg $line"
+          done
+          docker build -t $repo $BUILD_ARGS .
+        fi
 
-        BUILD_ARGS=""
-        for ((i=0; i<$NUM_LINES; i++)); do
-          ARG_NAME="arg$i"
-          ARG_VALUE=${LINES[i]}
-          BUILD_ARGS="$BUILD_ARGS --build-arg $ARG_NAME=\"$ARG_VALUE\""
-        done
-
-        docker build -t $repo --build-arg $BUILD_ARGS .
         docker push $repo
 
     - name: Repository Dispatch
