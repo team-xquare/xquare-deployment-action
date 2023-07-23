@@ -113,12 +113,8 @@ runs:
         if [ -z "${{ inputs.buildargs }}" ]; then
           docker build -t $repo .
         else
-          IFS=$'\n' read -d '' -ra LINES <<< "${{ inputs.buildargs }}"
-          
-          NUM_LINES=${#LINES[@]}
-          echo "Number of lines: $NUM_LINES"
           BUILD_ARGS=""
-          for line in "${LINES[@]}"; do
+          "${{ inputs.buildargs }}" | while IFS= read -r line; do
             BUILD_ARGS="$BUILD_ARGS --build-arg $line"
           done
           docker build -t $repo $BUILD_ARGS .
