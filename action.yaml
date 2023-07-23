@@ -114,7 +114,7 @@ runs:
           docker build -t $repo .
         else
           BUILD_ARGS=""
-          "${{ inputs.buildargs }}" | while IFS= read -r line; do
+          '${{ inputs.buildargs }}' | while IFS= read -r line; do
             BUILD_ARGS="$BUILD_ARGS --build-arg $line"
           done
           docker build -t $repo $BUILD_ARGS .
