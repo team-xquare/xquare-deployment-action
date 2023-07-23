@@ -89,7 +89,7 @@ runs:
           {
             "repository_name" : "${{ env.ECR_REPOSITORY_NAME }}",
             "service_name" : "${{ steps.read-config.outputs.service_name }}",
-            "service_type" : "${{ inputs.read-config.outputs.service_type }}",
+            "service_type" : "${{ steps.read-config.outputs.service_type }}",
             "environment" : "${{ inputs.environment }}"
           }
 
