@@ -76,31 +76,23 @@ jobs:
 
 - Docker build 이전에 필요한 동작이 있다면 추가합니다. [(참고)](https://github.com/team-xquare/xquare-deployment-action/tree/master/examples)
 
-- 
-
-
-#### 2-2. Docker build 사전 작업
+- xquare-deployment-action을 참조하여 사용합니다.
 
 ```yml
-...
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Java
-        uses: actions/setup-java@v2
+      - name: Deploy to xquare
+        uses: team-xquare/xquare-deployment-action@master 
         with:
-          java-version: '17'
-
-      - name: Build Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: |
-            build
-            --build-cache
-            --no-daemon
-      ...
+          service_type: be
+          environment: prod
+          xquare_role_arn: ${{ secrets.XQUARE_ROLE_ARN }}
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          build_args: |
+              DB_USERNAME=${{ secrets.DB_USERNAME }}
+              DB_PASSWORD=${{ secrets.DB_PASSWORD }}
 ```
 
-
-#### 2-3.
->>>>>>> Stashed changes
+- `service_type`: 서비스의 타입을 정의합니다 (ex. be, fe)
+- `environment`: 실행 환경을 정의합니다. `prod`(운영 환경)혹은 `stag`(테스트 환경) 중 한 가지를 사용할 수 있습니다.
+- `github_token`: 3번에서 발급받은 github personal access token을 대입합니다.
+- `xquare_role_arn`: 4번에서 발급받은 xquare role key를 대입합니다.
+- `buildargs`: 도커 이미지 빌드시 설정 될 build args(환경변수)를 각 줄마다 구분하여 입력합니다.
