@@ -69,18 +69,21 @@ runs:
         aws ecr describe-repositories --repository-names ${{ env.ECR_REPOSITORY_NAME }}
         exit_code=$?
         set -e
-        echo $exit_code
-        echo $($exit_code != 0 ? 'false' : 'true')
-        echo "ecr_exists=$($exit_code != 0 ? 'false' : 'true')" >> $GITHUB_OUTPUT
+
+        if [ $exit_code -ne 0 ]; then
+          echo "ecr_exists='false'" >> $GITHUB_OUTPUT
+        else
+          echo "ecr_exists='true'" >> $GITHUB_OUTPUT
+        fi
 
     - name: Create ECR repository if not exists
-      if: steps.ecr_exists.outputs.ecr_exists == 'false'
+      if: ${{ steps.ecr_exists.outputs.ecr_exists }} == 'false'
       shell: bash
       run: |
         aws ecr create-repository --repository-name ${{ env.ECR_REPOSITORY_NAME }}
 
     - name: Terraform Repository Dispatch if not exists
-      if: steps.ecr_exists.outputs.ecr_exists == 'false'
+      if: ${{ steps.ecr_exists.outputs.ecr_exists }} == 'false'
       uses: peter-evans/repository-dispatch@v1
       with:
         token: ${{ inputs.github_token }}
@@ -131,7 +134,7 @@ runs:
         client-payload: |
           {
             "ref" : "${{ github.ref }}", 
-            "image_tag" : "${{ steps.get_tag.outputs.version_tag }}",
+            "image_tag" : "${{ steps.tag.outputs.version_tag }}",
             "service_name" : "${{ steps.read-config.outputs.service_name }}",
             "service_prefix" : "${{ steps.read-config.outputs.service_prefix }}",
             "service_type" : "${{ inputs.service_type }}",
