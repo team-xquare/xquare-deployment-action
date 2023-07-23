@@ -6,9 +6,6 @@ branding:
 
 description: 'Tasks to deploy to xquare server'
 inputs:
-  service_type:
-    description: 'Type of service (ex. be, fe)'
-    required: true
   environment:
     description: 'Environment classification for servers (prod/stag)' 
     required: true
@@ -46,6 +43,7 @@ runs:
         config=$(cat ${{ inputs.config_file_path }})
         echo "service_name=$(yq eval ".config.name" <<< "$config")" >> $GITHUB_OUTPUT
         echo "service_prefix=$(yq eval ".config.prefix" <<< "$config")" >> $GITHUB_OUTPUT
+        echo "service_type=$(yq eval ".config.service_type" <<< "$config")" >> $GITHUB_OUTPUT
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
@@ -92,7 +90,7 @@ runs:
           {
             "repository_name" : "${{ env.ECR_REPOSITORY_NAME }}",
             "service_name" : "${{ steps.read-config.outputs.service_name }}",
-            "service_type" : "${{ inputs.service_type }}",
+            "service_type" : "${{ inputs.read-config.outputs.service_type }}",
             "environment" : "${{ inputs.environment }}"
           }
 
