@@ -69,7 +69,7 @@ runs:
         aws ecr describe-repositories --repository-names ${{ env.ECR_REPOSITORY_NAME }}
         exit_code=$?
         set -e
-
+        echo $exit_code
         if [ $exit_code -ne 0 ]; then
           echo "ecr_exists='false'" >> $GITHUB_OUTPUT
         else
@@ -130,7 +130,7 @@ runs:
       with:
         token: ${{ inputs.github_token }}
         repository: team-xquare/xquare-gitops-repo
-        event-type: update_image
+        event-type: update_config
         client-payload: |
           {
             "ref" : "${{ github.ref }}", 
