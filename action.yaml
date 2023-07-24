@@ -57,23 +57,23 @@ runs:
     - name: Get ECR Repository name
       id: repository
       shell: bash
-      run: echo "repository_name=${{ inputs.service_name }}-${{ inputs.service_type }}-${{ inputs.environment }}" >> $GITHUB_OUTPUT
+      run: echo "repository_name=${{ env.name }}-${{ env.type }}-${{ inputs.environment }}" >> $GITHUB_OUTPUT
 
     - name: Create ecr if not exists
       uses: team-xquare/xquare-deployment-action/create-ecr@master
       with:
         repository_name: ${{ steps.repository.outputs.repository_name }}
-        service_name: ${{ steps.read-config.outputs.name }}
-        service_type: ${{ steps.read-config.outputs.type }}
+        service_name: ${{ env.name }}
+        service_type: ${{ env.type }}
         environment: ${{ inputs.environment }}
         github_token: ${{ inputs.github_token }}
 
     # Domain
     - name: Create domain if not exists
-      if: ${{ steps.read-config.outputs.domain }}
+      if: ${{ env.domain }}
       uses: team-xquare/xquare-deployment-action/create-domain@master
       with:
-        domain: ${{ steps.read-config.outputs.domain }}
+        domain: ${{ env.domain }}
 
     # Docker
     - name: Get image tag
@@ -90,7 +90,7 @@ runs:
       id: docker
       shell: bash
       run: |
-        repo="${{ steps.ecr.outputs.registry }}/${{ steps.repository.outputs.service_name }}:${{ steps.tag.outputs.version_tag }}"
+        repo="${{ steps.ecr.outputs.registry }}/${{ steps.repository.outputs.repository_name }}:${{ steps.tag.outputs.version_tag }}"
         if [ -z "${{ inputs.buildargs }}" ]; then
           docker build -t $repo ${{ inputs.base_url }}
         else
@@ -114,9 +114,9 @@ runs:
           {
             "ref" : "${{ github.ref }}", 
             "image_tag" : "${{ steps.tag.outputs.version_tag }}",
-            "service_name" : "${{ steps.read-config.outputs.name }}",
-            "service_prefix" : "${{ steps.read-config.outputs.prefix }}",
-            "service_domain" : "${{ steps.read-config.outputs.domain }}",
-            "service_type" : "${{ steps.read-config.outputs.type }}",
+            "service_name" : "${{ env.name }}",
+            "service_prefix" : "${{ env.prefix }}",
+            "service_domain" : "${{ env.domain }}",
+            "service_type" : "${{ env.type }}",
             "environment" : "${{ inputs.environment }}"
           }

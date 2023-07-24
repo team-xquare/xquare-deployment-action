@@ -4,7 +4,7 @@ github_raw_url="https://raw.githubusercontent.com/$GIT_REPO/${TARGET_BRANCH#refs
 file_content=$(curl -sS $github_raw_url)
 
 function readValue {
-  echo $(echo "$file_content" | yq eval $1 - > /dev/null)
+  echo "$file_content" | yq eval $1 -
 }
 
 # config 파일에 필요한 키가 존재하는지 여부 확인
@@ -26,7 +26,13 @@ if [[ ! $domain_value = "" && ! "$domain_value" =~ \.xquare\.app$ ]]; then
   exit 1
 fi
 
-echo "name=$(readValue ".config.name")" >> $GITHUB_OUTPUT
-echo "prefix=$(readValue ".config.prefix")" >> $GITHUB_OUTPUT
-echo "domain=$(readValue ".config.domain")" >> $GITHUB_OUTPUT
-echo "type=$(readValue ".config.service_type")" >> $GITHUB_OUTPUT
+echo "name=$(readValue ".config.name")" 
+echo "prefix=$(readValue ".config.prefix")"
+echo "domain=$(readValue ".config.domain")"
+echo "type=$(readValue ".config.service_type")"
+
+
+echo "name=$(readValue ".config.name")" >> $GITHUB_ENV
+echo "prefix=$(readValue ".config.prefix")" >> $GITHUB_ENV
+echo "domain=$(readValue ".config.domain")" >> $GITHUB_ENV
+echo "type=$(readValue ".config.service_type")" >> $GITHUB_ENV
