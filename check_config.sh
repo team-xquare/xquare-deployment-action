@@ -11,7 +11,7 @@ function readValue {
 required_keys=(".config.name" ".config.service_type")
 
 for required_key in "${required_keys[@]}"; do
-  if ! $(readValue "${required_key}"); then
+  if ! readValue "${required_key}"; then
     echo "Error: The specified key \"$required_key\" does not exist"
     exit 1
   fi
@@ -21,16 +21,10 @@ done
 domain_key=".config.domain"
 domain_value=$(readValue "${domain_key}")
 
-if [[ ! $domain_value = "" && ! "$domain_value" =~ \.xquare\.app$ ]]; then
+if [[ -z $domain_value && $domain_value != *.xquare.app ]]; then
   echo "Error: The domain ($domain_value) does not end with '.xquare.app'."
   exit 1
 fi
-
-echo "name=$(readValue ".config.name")" 
-echo "prefix=$(readValue ".config.prefix")"
-echo "domain=$(readValue ".config.domain")"
-echo "type=$(readValue ".config.service_type")"
-
 
 echo "name=$(readValue ".config.name")" >> $GITHUB_ENV
 echo "prefix=$(readValue ".config.prefix")" >> $GITHUB_ENV
