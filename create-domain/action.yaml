@@ -1,0 +1,47 @@
+name: 'Create xquare domain'
+author: 'Xquare'
+branding:
+  icon: 'Xquare'
+  color: 'Purple'
+
+description: 'Tasks to create xquare domain in cloudflare if not exists'
+inputs:
+  domain:
+    description: 'Domain to create' 
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Get Secrets
+      uses: aws-actions/aws-secretsmanager-get-secrets@v1
+      with:
+        secret-ids:
+          xquare/action
+        parse-json-secrets: true
+
+    - name: Check if subdomain exists
+      id: check
+      shell: bash
+      run: |
+        result=$(dig +short ${{ inputs.domain }})
+        if [ -z "$result" ]; then
+          echo "domain_exists=false" >> $GITHUB_OUTPUT
+        else
+          echo "domain_exists=true" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Create Domain
+      if: steps.check.outputs.domain_exists == 'false'
+      shell: bash
+      run: |
+        curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ env.XQUARE_ACTION_ZONE_ID }}/dns_records" \
+          -H "Authorization: Bearer ${{ env.XQUARE_ACTION_CLOUDFLARE_API_KEY }}" \
+          -H "Content-Type: application/json" \
+          --data '{
+            "type": "A",
+            "name": "${{ inputs.domain }}",
+            "content": "${{ env.XQUARE_ACTION_DESTINATION_IP }}",
+            "ttl": 1,
+            "proxied": false
+          }'

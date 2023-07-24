@@ -27,11 +27,12 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    # Config file
     - name: Install yq
       uses: mikefarah/yq@v4
 
-    - name: Check config values
-      id: check-config
+    - name: Check and read config values
+      id: read-config
       shell: bash
       env:
         GIT_REPO: ${{ github.repository }}
@@ -41,34 +42,40 @@ runs:
         chmod +x $GITHUB_ACTION_PATH/check_config.sh
         $GITHUB_ACTION_PATH/check_config.sh
 
-    - name: Read config file
-      id: read-config
-      shell: bash
-      run: |
-        config=$(cat ${{ inputs.config_file_path }})
-        echo "service_name=$(yq eval ".config.name" <<< "$config")" >> $GITHUB_OUTPUT
-        echo "service_prefix=$(yq eval ".config.prefix" <<< "$config")" >> $GITHUB_OUTPUT
-        echo "service_domain=$(yq eval ".config.domain" <<< "$config")" >> $GITHUB_OUTPUT
-        echo "service_type=$(yq eval ".config.service_type" <<< "$config")" >> $GITHUB_OUTPUT
-
+    # AWS Setting
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: ${{ inputs.xquare_role_arn }}
         aws-region: ap-northeast-2
 
+    # ECR
     - name: Login to Amazon ECR
       id: ecr
       uses: aws-actions/amazon-ecr-login@v1
 
+    - name: Get ECR Repository name
+      id: repository
+      shell: bash
+      run: echo "repository_name=${{ inputs.service_name }}-${{ inputs.service_type }}-${{ inputs.environment }}" >> $GITHUB_OUTPUT
+
     - name: Create ecr if not exists
       uses: team-xquare/xquare-deployment-action/create-ecr@master
       with:
+        repository_name: ${{ steps.repository.outputs.repository_name }}
+        service_name: ${{ steps.read-config.outputs.name }}
+        service_type: ${{ steps.read-config.outputs.type }}
         environment: ${{ inputs.environment }}
         github_token: ${{ inputs.github_token }}
-        service_name: ${{ steps.read-config.outputs.service_name }}
-        service_type: ${{ steps.read-config.outputs.service_type }}
 
+    # Domain
+    - name: Create domain if not exists
+      if: ${{ steps.read-config.outputs.domain }}
+      uses: team-xquare/xquare-deployment-action/create-domain@master
+      with:
+        domain: ${{ steps.read-config.outputs.domain }}
+
+    # Docker
     - name: Get image tag
       id: tag
       shell: bash
@@ -83,7 +90,7 @@ runs:
       id: docker
       shell: bash
       run: |
-        repo="${{ steps.ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:${{ steps.tag.outputs.version_tag }}"
+        repo="${{ steps.ecr.outputs.registry }}/${{ steps.repository.outputs.service_name }}:${{ steps.tag.outputs.version_tag }}"
         if [ -z "${{ inputs.buildargs }}" ]; then
           docker build -t $repo ${{ inputs.base_url }}
         else
@@ -96,6 +103,7 @@ runs:
 
         docker push $repo
 
+    # GitOps
     - name: Repository Dispatch
       uses: peter-evans/repository-dispatch@v1
       with:
@@ -106,9 +114,9 @@ runs:
           {
             "ref" : "${{ github.ref }}", 
             "image_tag" : "${{ steps.tag.outputs.version_tag }}",
-            "service_name" : "${{ steps.read-config.outputs.service_name }}",
-            "service_prefix" : "${{ steps.read-config.outputs.service_prefix }}",
-            "service_domain" : "${{ steps.read-config.outputs.service_domain }}",
-            "service_type" : "${{ steps.read-config.outputs.service_type }}",
+            "service_name" : "${{ steps.read-config.outputs.name }}",
+            "service_prefix" : "${{ steps.read-config.outputs.prefix }}",
+            "service_domain" : "${{ steps.read-config.outputs.domain }}",
+            "service_type" : "${{ steps.read-config.outputs.type }}",
             "environment" : "${{ inputs.environment }}"
           }
