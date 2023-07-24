@@ -48,6 +48,7 @@ runs:
         config=$(cat ${{ inputs.config_file_path }})
         echo "service_name=$(yq eval ".config.name" <<< "$config")" >> $GITHUB_OUTPUT
         echo "service_prefix=$(yq eval ".config.prefix" <<< "$config")" >> $GITHUB_OUTPUT
+        echo "service_domain=$(yq eval ".config.domain" <<< "$config")" >> $GITHUB_OUTPUT
         echo "service_type=$(yq eval ".config.service_type" <<< "$config")" >> $GITHUB_OUTPUT
 
     - name: Configure AWS credentials
@@ -60,45 +61,15 @@ runs:
       id: ecr
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Set ECR Repository name Env
-      shell: bash
-      run: echo "ECR_REPOSITORY_NAME=${{ steps.read-config.outputs.service_name }}-${{ steps.read-config.outputs.service_type }}-${{ inputs.environment }}" >> $GITHUB_ENV
-
-    - name: Check if ECR repository exists
-      shell: bash
-      run: |
-        set +e
-        aws ecr describe-repositories --repository-names ${{ env.ECR_REPOSITORY_NAME }}
-        exit_code=$?
-        set -e
-        if [ $exit_code -ne 0 ]; then
-          echo "ecr_exists=false" >> $GITHUB_ENV
-        else
-          echo "ecr_exists=true" >> $GITHUB_ENV
-        fi
-
-    - name: Create ECR repository if not exists
-      if: env.ecr_exists == 'false'
-      shell: bash
-      run: |
-        aws ecr create-repository --repository-name ${{ env.ECR_REPOSITORY_NAME }}
-
-    - name: Terraform Repository Dispatch if not exists
-      if: env.ecr_exists == 'false'
-      uses: peter-evans/repository-dispatch@v1
+    - name: Create ecr if not exists
+      uses: team-xquare/xquare-deployment-action/create-ecr@master
       with:
-        token: ${{ inputs.github_token }}
-        repository: team-xquare/xquare-infrastructure-global
-        event-type: add_ecr
-        client-payload: |
-          {
-            "repository_name" : "${{ env.ECR_REPOSITORY_NAME }}",
-            "service_name" : "${{ steps.read-config.outputs.service_name }}",
-            "service_type" : "${{ steps.read-config.outputs.service_type }}",
-            "environment" : "${{ inputs.environment }}"
-          }
+        environment: ${{ inputs.environment }}
+        github_token: ${{ inputs.github_token }}
+        service_name: ${{ steps.read-config.outputs.service_name }}
+        service_type: ${{ steps.read-config.outputs.service_type }}
 
-    - name: Get the branch tag if exist
+    - name: Get image tag
       id: tag
       shell: bash
       run: |
@@ -137,6 +108,7 @@ runs:
             "image_tag" : "${{ steps.tag.outputs.version_tag }}",
             "service_name" : "${{ steps.read-config.outputs.service_name }}",
             "service_prefix" : "${{ steps.read-config.outputs.service_prefix }}",
+            "service_domain" : "${{ steps.read-config.outputs.service_domain }}",
             "service_type" : "${{ steps.read-config.outputs.service_type }}",
             "environment" : "${{ inputs.environment }}"
           }

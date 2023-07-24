@@ -1,0 +1,62 @@
+name: 'Create xquare ecr if not exists'
+author: 'Xquare'
+branding:
+  icon: 'Xquare'
+  color: 'Purple'
+
+description: 'Tasks to deploy to create xquare ecr if not exists'
+inputs:
+  environment:
+    description: 'Environment classification for servers (prod/stag)' 
+    required: true
+  github_token:
+    description: 'Github personal access token to repository dispatch. It should has a `repo` scope. Detail on [Github Document](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)' 
+    required: true
+  service_name:
+    description: 'Name of service' 
+    required: true
+  service_type:
+    description: 'Type of service' 
+    required: true
+
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set ECR Repository name Env
+      shell: bash
+      run: echo "ECR_REPOSITORY_NAME=${{ steps.read-config.outputs.service_name }}-${{ steps.read-config.outputs.service_type }}-${{ inputs.environment }}" >> $GITHUB_ENV
+
+    - name: Check if ECR repository exists
+      shell: bash
+      run: |
+        set +e
+        aws ecr describe-repositories --repository-names ${{ env.ECR_REPOSITORY_NAME }}
+        exit_code=$?
+        set -e
+        if [ $exit_code -ne 0 ]; then
+          echo "ecr_exists=false" >> $GITHUB_ENV
+        else
+          echo "ecr_exists=true" >> $GITHUB_ENV
+        fi
+
+    - name: Create ECR repository if not exists
+      if: env.ecr_exists == 'false'
+      shell: bash
+      run: |
+        aws ecr create-repository --repository-name ${{ env.ECR_REPOSITORY_NAME }}
+
+    - name: Terraform Repository Dispatch if not exists
+      if: env.ecr_exists == 'false'
+      uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ inputs.github_token }}
+        repository: team-xquare/xquare-infrastructure-global
+        event-type: add_ecr
+        client-payload: |
+          {
+            "repository_name" : "${{ env.ECR_REPOSITORY_NAME }}",
+            "service_name" : "${{ steps.read-config.outputs.service_name }}",
+            "service_type" : "${{ steps.read-config.outputs.service_type }}",
+            "environment" : "${{ inputs.environment }}"
+          }
