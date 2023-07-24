@@ -9,6 +9,9 @@ inputs:
   environment:
     description: 'Environment classification for servers (prod/stag)' 
     required: true
+  base_url:
+    description: 'Base url of code'
+    default: '.'
   config_file_path:
     description: 'Path of Xquare Config file'
     default: '.xquare/config.yaml'
@@ -111,13 +114,13 @@ runs:
       run: |
         repo="${{ steps.ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:${{ steps.tag.outputs.version_tag }}"
         if [ -z "${{ inputs.buildargs }}" ]; then
-          docker build -t $repo .
+          docker build -t $repo ${{ inputs.base_url }}
         else
           BUILD_ARGS=""
           echo -e '${{ inputs.buildargs }}' | while IFS= read -r line; do
             BUILD_ARGS="$BUILD_ARGS --build-arg $line"
           done
-          docker build -t $repo $BUILD_ARGS .
+          docker build -t $repo $BUILD_ARGS ${{ inputs.base_url }}
         fi
 
         docker push $repo
