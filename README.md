@@ -34,11 +34,12 @@ config:
 
 - `repo` 권한을 반드시 포함해야 합니다.
 
-<img width="984" alt="image" src="https://github.com/team-xquare/xquare-deployment-action/assets/81006587/b58a44e4-6ec7-4fa2-8a2a-8b621bd73f67">
+<img width="1064" alt="image" src="https://github.com/team-xquare/xquare-deployment-action/assets/81006587/2354c73f-1fdc-48cd-9447-96063103b30e">
 
 ---
 
-<img width="984" alt="image" src="https://github.com/team-xquare/xquare-deployment-action/assets/81006587/4324e306-7cd7-458c-afd7-f846cde4a5fe">
+<img width="948" alt="image" src="https://github.com/team-xquare/xquare-deployment-action/assets/81006587/37bf236c-2fcc-418c-af71-250993d6fc3b">
+
 
 ---
 
@@ -47,7 +48,8 @@ config:
 - 관리자(rlaisqls@gmail.com)에 문의하여 xquare role key를 발급 받습니다.
 - 받은 key를 repository의 Secret으로 등록합니다.
 
-<img width="984" alt="image" src="https://github.com/team-xquare/xquare-deployment-action/assets/81006587/51d35173-964a-4260-b286-b973b92d87b5">
+<img width="948" alt="image" src="https://github.com/team-xquare/xquare-deployment-action/assets/81006587/9dbe386f-f4e0-4522-a0e4-ddc47ab87403">
+
 
 ---
 
