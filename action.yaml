@@ -95,9 +95,10 @@ runs:
           docker build -t $repo ${{ inputs.base_url }}
         else
           BUILD_ARGS=""
-          echo -e '${{ inputs.buildargs }}' | while IFS= read -r line; do
-            echo $line
-            BUILD_ARGS="$BUILD_ARGS --build-arg $line"
+          echo -e ${{ inputs.buildargs }} | while IFS= read -r line; do
+            if [ -n "$line" ]; then
+              BUILD_ARGS="$BUILD_ARGS --build-arg $line"
+            fi
           done
           echo $BUILD_ARGS
           echo "docker build -t $repo $BUILD_ARGS ${{ inputs.base_url }}"
