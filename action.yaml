@@ -99,6 +99,9 @@ runs:
             echo $line
             BUILD_ARGS="$BUILD_ARGS --build-arg $line"
           done
+          echo $BUILD_ARGS
+          echo "docker build -t $repo $BUILD_ARGS ${{ inputs.base_url }}"
+          
           docker build -t $repo $BUILD_ARGS ${{ inputs.base_url }}
         fi
 
