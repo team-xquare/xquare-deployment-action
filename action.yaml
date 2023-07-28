@@ -91,19 +91,17 @@ runs:
       shell: bash
       run: |
         repo="${{ steps.ecr.outputs.registry }}/${{ steps.repository.outputs.repository_name }}:${{ steps.tag.outputs.version_tag }}"
+        
         if [ -z "${{ inputs.buildargs }}" ]; then
-          docker build -t $repo ${{ inputs.base_url }}
+          docker build -t "$repo" "${{ inputs.base_url }}"
         else
           BUILD_ARGS=""
-          echo -e ${{ inputs.buildargs }} | while IFS= read -r line; do
+          while IFS= read -r line; do
             if [ -n "$line" ]; then
               BUILD_ARGS="$BUILD_ARGS --build-arg $line"
             fi
-          done
-          echo $BUILD_ARGS
-          echo "docker build -t $repo $BUILD_ARGS ${{ inputs.base_url }}"
-          
-          docker build -t $repo $BUILD_ARGS ${{ inputs.base_url }}
+          done <<< "${{ inputs.buildargs }}"
+          docker build -t "$repo" $BUILD_ARGS "${{ inputs.base_url }}"
         fi
 
         docker push $repo
