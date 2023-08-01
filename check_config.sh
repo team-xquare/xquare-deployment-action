@@ -1,6 +1,5 @@
 #!/bin/bash
 
-github_raw_url="https://raw.githubusercontent.com/$GIT_REPO/${TARGET_BRANCH#refs/heads/}/$CONFIG_FILE_PATH"
 file_content=$(cat $CONFIG_FILE_PATH)
 
 function readValue {
