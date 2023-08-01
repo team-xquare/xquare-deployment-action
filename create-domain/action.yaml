@@ -39,9 +39,9 @@ runs:
           -H "Authorization: Bearer ${{ env.XQUARE_ACTION_CLOUDFLARE_API_KEY }}" \
           -H "Content-Type: application/json" \
           --data '{
-            "type": "A",
+            "type": "CNAME",
             "name": "${{ inputs.domain }}",
-            "content": "${{ env.XQUARE_ACTION_DESTINATION_IP }}",
+            "content": "ab9687f57ef5a489eb11cb6ba3bcca3f-f0d24e08b86fff6f.elb.ap-northeast-2.amazonaws.com",
             "ttl": 1,
             "proxied": false
           }'
