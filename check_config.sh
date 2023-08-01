@@ -1,7 +1,7 @@
 #!/bin/bash
 
 github_raw_url="https://raw.githubusercontent.com/$GIT_REPO/${TARGET_BRANCH#refs/heads/}/$CONFIG_FILE_PATH"
-file_content=$(curl -sS $github_raw_url)
+file_content=$(cat $CONFIG_FILE_PATH)
 
 function readValue {
   echo "$file_content" | yq eval $1 -
