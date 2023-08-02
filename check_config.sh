@@ -7,7 +7,7 @@ function readValue {
 }
 
 # config 파일에 필요한 키가 존재하는지 여부 확인
-required_keys=(".config.name" ".config.service_type")
+required_keys=(".config.name" ".config.service_type" ".config.port")
 
 for required_key in "${required_keys[@]}"; do
   if ! readValue "${required_key}"; then
