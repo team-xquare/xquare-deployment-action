@@ -121,5 +121,6 @@ runs:
             "service_prefix" : "${{ env.prefix }}",
             "service_domain" : "${{ env.domain }}",
             "service_type" : "${{ env.type }}",
+            "service_port" : "${{ env.port }}",
             "environment" : "${{ inputs.environment }}"
           }

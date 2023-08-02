@@ -29,3 +29,4 @@ echo "name=$(readValue ".config.name")" >> $GITHUB_ENV
 echo "prefix=$(readValue ".config.prefix")" >> $GITHUB_ENV
 echo "domain=$(readValue ".config.domain")" >> $GITHUB_ENV
 echo "type=$(readValue ".config.service_type")" >> $GITHUB_ENV
+echo "port=$(readValue ".config.port")" >> $GITHUB_ENV
