@@ -38,6 +38,7 @@ runs:
         GIT_REPO: ${{ github.repository }}
         TARGET_BRANCH: ${{ github.ref }}
         CONFIG_FILE_PATH: ${{ inputs.config_file_path }}
+        ENVIRONMENT: ${{ inputs.environment }}
       run: |
         chmod +x $GITHUB_ACTION_PATH/check_config.sh
         $GITHUB_ACTION_PATH/check_config.sh

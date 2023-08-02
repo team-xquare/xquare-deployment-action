@@ -17,7 +17,7 @@ for required_key in "${required_keys[@]}"; do
 done
 
 # service_domain 값이 존재하면서 .xquare.app으로 끝나지 않는 경우 에러
-domain_key=".config.domain"
+domain_key=".config.domain.$ENVIRONMENT"
 domain_value=$(readValue "${domain_key}")
 
 if [[ -z $domain_value && $domain_value != *.xquare.app ]]; then
@@ -27,6 +27,6 @@ fi
 
 echo "name=$(readValue ".config.name")" >> $GITHUB_ENV
 echo "prefix=$(readValue ".config.prefix")" >> $GITHUB_ENV
-echo "domain=$(readValue ".config.domain")" >> $GITHUB_ENV
+echo "domain=$(readValue "${domain_key}")" >> $GITHUB_ENV
 echo "type=$(readValue ".config.service_type")" >> $GITHUB_ENV
 echo "port=$(readValue ".config.port")" >> $GITHUB_ENV
