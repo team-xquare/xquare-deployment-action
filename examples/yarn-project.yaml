@@ -32,7 +32,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-modules-
 
-      # yarn docker build는 아직 지원하지 않습니다
       - name: Deploy to xquare
         uses: team-xquare/xquare-deployment-action@master 
         with:
@@ -40,3 +39,5 @@ jobs:
           environment: YOUR_ENVIRONMENT
           xquare_role_arn: ${{ secrets.XQUARE_ROLE_ARN }}
           github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          yarn_docker_build: true
+          # yarn_workspace: @service/YOUR_SERVICE_NAME
