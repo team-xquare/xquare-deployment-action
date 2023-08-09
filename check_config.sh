@@ -1,6 +1,6 @@
 #!/bin/bash
 
-file_content=$(cat "./README.md" 2>&1)
+file_content=$(cat "$CONFIG_FILE_PATH" 2>&1)
 
 if [ $? -ne 0 ]; then
     echo "Error: An error occurred while getting config file's content" 
