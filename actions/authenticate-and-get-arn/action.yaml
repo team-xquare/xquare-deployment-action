@@ -1,0 +1,27 @@
+name: 'Authenticate and get arn'
+
+description: 'Verify access-key and return arn by server'
+inputs:
+  access-key:
+    description: 'Access key to action'
+    required: true
+  project-name:
+    description: 'Name of project'
+    required: true
+    
+runs:
+  using: 'composite'
+  steps:
+    - name: Authenticate and get arn
+      id: get-role-arn
+      shell: bash
+      run: |
+        url_encode() {
+          jq -s -R -r @uri <<< "$1"
+        }
+        access-key=$(urlencode "${{ inputs.access-key }}")
+        project-name=$(urlencode "${{ inputs.project-name }}")
+        repository=$(urlencode "${{ github.repository }}")
+
+        response=$(curl -X POST "https://prod-server.xquare.app/project-secret-manager/verify?access-key=$access-key&project-name=$project-name&repository=$repository")
+        echo "xquare_role_arn=$(response)" >> $GITHUB_ENV
