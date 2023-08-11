@@ -1,5 +1,6 @@
 #!/bin/bash
 
+cat "$CONFIG_FILE_PATH"
 file_content=$(cat "$CONFIG_FILE_PATH" 2>&1)
 
 if [ $? -ne 0 ]; then

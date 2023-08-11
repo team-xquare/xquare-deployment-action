@@ -34,31 +34,28 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    # Config file
     - name: Install yq
       uses: mikefarah/yq@v4
 
-    - name: Check and read config values
-      uses: team-xquare/xquare-deployment-action/actions/check-config@master
+    - name: Read config values
+      uses: team-xquare/xquare-deployment-action/actions/read-config@master
       with:
-        config-file-path: ${{ inputs.config_file_path }}
+        config_file_path: ${{ inputs.config_file_path }}
         environment: ${{ inputs.environment }}
 
     - name: Authenticate and get role-arn
       id: get-role-arn
       uses: team-xquare/xquare-deployment-action/actions/authenticate-and-get-arn@master
       with:
-        access-key: ${{ inputs.access-key }}
+        access-key: ${{ inputs.access_key }}
         project-name: ${{ env.name }}
 
-    # AWS Setting
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: ${{ env.xquare_role_arn }}
         aws-region: ap-northeast-2
 
-    # ECR
     - name: Login to Amazon ECR
       id: ecr
       uses: aws-actions/amazon-ecr-login@v1
@@ -77,14 +74,12 @@ runs:
         environment: ${{ inputs.environment }}
         github_token: ${{ inputs.github_token }}
 
-    # Domain
     - name: Create domain if not exists
       if: ${{ env.domain }}
       uses: team-xquare/xquare-deployment-action/actions/create-domain@master
       with:
         domain: ${{ env.domain }}
 
-    # Docker
     - name: Docker push
       uses: team-xquare/xquare-deployment-action/actions/docker-push@master
       with:
@@ -96,7 +91,6 @@ runs:
         yarn_workspace: ${{ inputs.yarn_workspace }}
         buildargs: ${{ inputs.buildargs }}
 
-    # GitOps
     - name: Repository Dispatch
       uses: peter-evans/repository-dispatch@v1
       with:

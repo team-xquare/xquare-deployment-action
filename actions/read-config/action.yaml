@@ -1,8 +1,8 @@
-name: 'Check config'
+name: 'Read config'
 
-description: 'Check config file and register env'
+description: 'Check and read config file'
 inputs:
-  config-file-path:
+  config_file_path:
     description: 'Path of Xquare Config file'
     required: true
   environment:
