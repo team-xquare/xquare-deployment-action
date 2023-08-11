@@ -82,6 +82,7 @@ runs:
         domain: ${{ env.domain }}
 
     - name: Docker push
+      id: docker
       uses: team-xquare/xquare-deployment-action/actions/docker-push@master
       with:
         registry_name: ${{ steps.ecr.outputs.registry }}
@@ -101,7 +102,7 @@ runs:
         client-payload: |
           {
             "ref" : "${{ github.ref }}", 
-            "image_tag" : "${{ steps.tag.outputs.version_tag }}",
+            "image_tag" : "${{ env.version_tag }}",
             "service_name" : "${{ env.name }}",
             "service_prefix" : "${{ env.prefix }}",
             "service_domain" : "${{ env.domain }}",

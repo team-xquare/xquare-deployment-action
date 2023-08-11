@@ -32,16 +32,16 @@ runs:
       shell: bash
       run: |
           if [[ $GITHUB_REF == refs/tags/* ]]; then
-            echo "version_tag=${{ inputs.environment }}-$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_OUTPUT
+            echo "version_tag=${{ inputs.environment }}-$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_ENV
           else
-            echo "version_tag=${{ inputs.environment }}-${{ github.sha }}" >> $GITHUB_OUTPUT
+            echo "version_tag=${{ inputs.environment }}-${{ github.sha }}" >> $GITHUB_ENV
           fi
 
     - name: Docker Build and push
       id: docker
       shell: bash
       run: |
-        repo="${{ inputs.registry_name }}/${{ inputs.repository_name }}:${{ steps.tag.outputs.version_tag }}"
+        repo="${{ inputs.registry_name }}/${{ inputs.repository_name }}:${{ env.version_tag }}"
         BUILD_ARGS=""
         while IFS= read -r line; do
           if [ -n "$line" ]; then
