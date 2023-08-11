@@ -10,9 +10,9 @@ Action을 수행했을 때 이뤄지는 동작은 아래와 같습니다.
 
 <img width="1296" alt="image" src="https://github.com/team-xquare/xquare-deployment-action/assets/81006587/e58f3261-221d-445e-974d-53513852a86b">
 
-## 적용 방법
+# 적용 방법
 
-### 1. `.xquare/config.yaml` 파일 정의
+## 1. `.xquare/config.yaml` 파일 정의
 
 ```yml
 config:
@@ -24,11 +24,11 @@ config:
 - `prefix` : 프로젝트가 가질 접두사를 지정합니다. prefix 값이 `/domitory`인 경우, 서버에서 받는 요청의 모든 경로가 `/domitory`로 시작해야 합니다. (ex. `/domitory/study-room`, `/domitory/remain`)
     다른 프로젝트와 겹치지 않는 유일한 접두사를 사용해야합니다.
 
-### 2. Dockerfile 생성
+## 2. Dockerfile 생성
 
 - git repository에 [Dockerfile](https://docs.docker.com/engine/reference/builder/)을 생성합니다.
 
-### 3. Github token 발급
+## 3. Github token 발급
 
 - Github [Personal Access Toekn](https://docs.github.com/ko/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)을 발급받아 repository의 Secret으로 등록합니다.
 
@@ -43,7 +43,7 @@ config:
 
 ---
 
-### 4. xquare role key 발급
+## 4. xquare role key 발급
 
 - 관리자(rlaisqls@gmail.com)에 문의하여 xquare role key를 발급 받습니다.
 - 받은 key를 repository의 Secret으로 등록합니다.
@@ -53,7 +53,7 @@ config:
 
 ---
 
-#### 5. Git Action 작성
+## 5. Git Action 작성
 
 - 배포가 필요한 경우에 대한 Git Action을 작성합니다.
   - 자신의 프로젝트에 맞게 설정해주세요.
@@ -80,6 +80,30 @@ jobs:
 
 - xquare-deployment-action을 참조하여 사용합니다.
 
+### 기본 입력 필드
+
+```yml
+      - name: Deploy to xquare
+        uses: team-xquare/xquare-deployment-action@master 
+        with:
+          service_type: be # ------------------------------------- 1
+          environment: prod # ------------------------------------ 2
+          xquare_role_arn: ${{ secrets.XQUARE_ROLE_ARN }} # ------ 3
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }} # --- 4
+          build_args: | # ---------------------------------------- 5
+              DB_USERNAME=${{ secrets.DB_USERNAME }}
+              DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          
+```
+
+1. `service_type`: 서비스의 타입을 정의합니다 (ex. be, fe)
+2. `environment`: 실행 환경을 정의합니다. `prod`(운영 환경)혹은 `stag`(테스트 환경) 중 한 가지를 사용할 수 있습니다.
+3. `github_token`: 3번에서 발급받은 github personal access token을 대입합니다.
+4. `xquare_role_arn`: 4번에서 발급받은 xquare role key를 대입합니다.
+5. `buildargs`: 도커 이미지 빌드시 설정 될 build args(환경변수)를 각 줄마다 구분하여 입력합니다.
+
+### yarn build
+
 ```yml
       - name: Deploy to xquare
         uses: team-xquare/xquare-deployment-action@master 
@@ -91,10 +115,10 @@ jobs:
           build_args: |
               DB_USERNAME=${{ secrets.DB_USERNAME }}
               DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          yarn_docker_build: true # ------------------------------ 1
+          yarn_workspace: '@service/dms' # ----------------------- 2
+          
 ```
 
-- `service_type`: 서비스의 타입을 정의합니다 (ex. be, fe)
-- `environment`: 실행 환경을 정의합니다. `prod`(운영 환경)혹은 `stag`(테스트 환경) 중 한 가지를 사용할 수 있습니다.
-- `github_token`: 3번에서 발급받은 github personal access token을 대입합니다.
-- `xquare_role_arn`: 4번에서 발급받은 xquare role key를 대입합니다.
-- `buildargs`: 도커 이미지 빌드시 설정 될 build args(환경변수)를 각 줄마다 구분하여 입력합니다.
+1. `yarn_docker_build`: `yarn docker build`를 사용하는 경우 true로 지정합니다.
+2. `yarn_workspace`: yarn docker build에서 workspace를 지정해야하는 경우 해당 workspace의 이름을 입력합니다.
