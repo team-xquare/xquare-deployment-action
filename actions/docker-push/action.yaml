@@ -1,0 +1,57 @@
+name: 'Docker push'
+
+description: 'Docker push'
+inputs:
+  registry_name:
+    description: 'Name of ecr registry' 
+    required: true
+  repository_name:
+    description: 'Name of ecr repository' 
+    required: true
+  environment:
+    description: 'Environment classification for servers (prod/stag)' 
+    required: true
+  base_url:
+    description: 'Base url of code'
+    required: true
+  yarn_docker_build:
+    description: 'Boolean value indicating whether to use the "yarn docker build" command instead of the "docker build" command'
+    required: true
+  yarn_workspace:
+    description: 'Workspace name to build docker image'
+    required: false
+  buildargs:
+    description: 'Use buildargs when you want to pass a list of environment variables to docker as build-args'
+    required: false
+    
+runs:
+  using: 'composite'
+  steps:
+    - name: Get image tag
+      id: tag
+      shell: bash
+      run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            echo "version_tag=${{ inputs.environment }}-$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_OUTPUT
+          else
+            echo "version_tag=${{ inputs.environment }}-${{ github.sha }}" >> $GITHUB_OUTPUT
+          fi
+
+    - name: Docker Build and push
+      id: docker
+      shell: bash
+      run: |
+        repo="${{ inputs.registry_name }}/${{ inputs.repository_name }}:${{ steps.tag.outputs.version_tag }}"
+        BUILD_ARGS=""
+        while IFS= read -r line; do
+          if [ -n "$line" ]; then
+            BUILD_ARGS="$BUILD_ARGS --build-arg $line"
+          fi
+        done <<< "${{ inputs.buildargs }}"
+
+        if [ "${{ inputs.yarn_docker_build }}" = "true" ]; then
+          yarn docker build "${{ inputs.yarn_workspace }}" -t "$repo" $BUILD_ARGS
+        else
+          docker build -t "$repo" $BUILD_ARGS "${{ inputs.base_url }}"
+        fi
+        docker push $repo

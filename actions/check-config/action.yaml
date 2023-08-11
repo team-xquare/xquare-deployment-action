@@ -1,0 +1,23 @@
+name: 'Check config'
+
+description: 'Check config file and register env'
+inputs:
+  config-file-path:
+    description: 'Path of Xquare Config file'
+    required: true
+  environment:
+    description: 'Environment classification for servers (prod/stag)' 
+    required: true
+    
+runs:
+  using: 'composite'
+  steps:
+    - name: Check and read config values
+      id: read-config
+      shell: bash
+      env:
+        CONFIG_FILE_PATH: ${{ inputs.config_file_path }}
+        ENVIRONMENT: ${{ inputs.environment }}
+      run: |
+        chmod +x $GITHUB_ACTION_PATH/check_config.sh
+        $GITHUB_ACTION_PATH/check_config.sh

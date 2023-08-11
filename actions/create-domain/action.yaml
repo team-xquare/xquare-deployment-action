@@ -1,8 +1,4 @@
 name: 'Create xquare domain'
-author: 'Xquare'
-branding:
-  icon: 'Xquare'
-  color: 'Purple'
 
 description: 'Tasks to create xquare domain in cloudflare if not exists'
 inputs:

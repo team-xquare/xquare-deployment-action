@@ -1,8 +1,4 @@
 name: 'Create xquare ecr if not exists'
-author: 'Xquare'
-branding:
-  icon: 'Xquare'
-  color: 'Purple'
 
 description: 'Tasks to create xquare ecr if not exists'
 inputs:
