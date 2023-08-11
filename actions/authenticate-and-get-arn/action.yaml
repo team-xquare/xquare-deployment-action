@@ -2,10 +2,10 @@ name: 'Authenticate and get arn'
 
 description: 'Verify access-key and return arn by server'
 inputs:
-  access-key:
+  access_key:
     description: 'Access key to action'
     required: true
-  project-name:
+  project_name:
     description: 'Name of project'
     required: true
     
@@ -16,12 +16,28 @@ runs:
       id: get-role-arn
       shell: bash
       run: |
-        url_encode() {
-          jq -s -R -r @uri <<< "$1"
-        }
-        access-key=$(urlencode "${{ inputs.access-key }}")
-        project-name=$(urlencode "${{ inputs.project-name }}")
-        repository=$(urlencode "${{ github.repository }}")
+        function urlencode() {
+          local string="$1"
+          local length="${#string}"
 
-        response=$(curl -X POST "https://prod-server.xquare.app/project-secret-manager/verify?access-key=$access-key&project-name=$project-name&repository=$repository")
-        echo "xquare_role_arn=$(response)" >> $GITHUB_ENV
+          for (( i = 0; i < length; i++ )); do
+            local char="${string:i:1}"
+            case $char in
+              [a-zA-Z0-9.~_-]) printf "%s" "$char" ;;
+              *) printf "%%%02X" "'$char"
+            esac
+          done
+        }
+
+        url="https://prod-server.xquare.app/project-secret-manager/verify | \
+          ?access-key=${urlencode "${{ inputs.access_key }}"} | \
+          &project-name=${urlencode "${{ inputs.project_name }}"} | \
+          &repository=${urlencode "${{ github.repository }}"}
+
+        response=$(curl -X POST $url)
+        if [[ "${response}" == "Unauthorized" ]]; then
+          echo "Unauthorized: Invalid access key or no repository is registered running the action."
+          exit 1
+        fi
+
+        echo "xquare_role_arn=${response}" >> $GITHUB_ENV

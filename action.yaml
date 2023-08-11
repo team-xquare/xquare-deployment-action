@@ -38,6 +38,7 @@ runs:
       uses: mikefarah/yq@v4
 
     - name: Read config values
+      id: config-value
       uses: team-xquare/xquare-deployment-action/actions/read-config@master
       with:
         config_file_path: ${{ inputs.config_file_path }}
@@ -47,8 +48,8 @@ runs:
       id: get-role-arn
       uses: team-xquare/xquare-deployment-action/actions/authenticate-and-get-arn@master
       with:
-        access-key: ${{ inputs.access_key }}
-        project-name: ${{ env.name }}
+        access_key: ${{ inputs.access_key }}
+        project_name: ${{ env.name }}
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
