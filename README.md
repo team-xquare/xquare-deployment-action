@@ -34,22 +34,20 @@ config:
 
 - `repo` 권한을 반드시 포함해야 합니다.
 
-<img width="1064" alt="image" src="https://github.com/team-xquare/xquare-deployment-action/assets/81006587/2354c73f-1fdc-48cd-9447-96063103b30e">
+<img width="800" alt="image" src="https://github.com/team-xquare/xquare-deployment-action/assets/81006587/2354c73f-1fdc-48cd-9447-96063103b30e">
 
 ---
 
-<img width="948" alt="image" src="https://github.com/team-xquare/xquare-deployment-action/assets/81006587/37bf236c-2fcc-418c-af71-250993d6fc3b">
-
+<img width="800" alt="image" src="https://github.com/team-xquare/xquare-deployment-action/assets/81006587/72203e28-5ea6-4d8f-908c-1a1afeefecf0">
 
 ---
 
-## 4. xquare role key 발급
+## 4. xquare access key 발급
 
-- 관리자(rlaisqls@gmail.com)에 문의하여 xquare role key를 발급 받습니다.
+- 관리자(rlaisqls@gmail.com)에 문의하여 deployment action access key를 발급 받습니다.
 - 받은 key를 repository의 Secret으로 등록합니다.
 
-<img width="948" alt="image" src="https://github.com/team-xquare/xquare-deployment-action/assets/81006587/9dbe386f-f4e0-4522-a0e4-ddc47ab87403">
-
+<img width="800" alt="image" src="https://github.com/team-xquare/xquare-deployment-action/assets/81006587/54bf0296-a658-4d6c-ad29-049d25a53694">
 
 ---
 
@@ -86,21 +84,19 @@ jobs:
       - name: Deploy to xquare
         uses: team-xquare/xquare-deployment-action@master 
         with:
-          service_type: be # ------------------------------------- 1
-          environment: prod # ------------------------------------ 2
-          xquare_role_arn: ${{ secrets.XQUARE_ROLE_ARN }} # ------ 3
-          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }} # --- 4
-          build_args: | # ---------------------------------------- 5
+          environment: prod # ------------------------------------ 1
+          access_key: ${{ secrets.ACCESS_KEY }} # ---------------- 2
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }} # --- 3
+          build_args: | # ---------------------------------------- 4
               DB_USERNAME=${{ secrets.DB_USERNAME }}
               DB_PASSWORD=${{ secrets.DB_PASSWORD }}
           
 ```
 
-1. `service_type`: 서비스의 타입을 정의합니다 (ex. be, fe)
 2. `environment`: 실행 환경을 정의합니다. `prod`(운영 환경)혹은 `stag`(테스트 환경) 중 한 가지를 사용할 수 있습니다.
 3. `github_token`: 3번에서 발급받은 github personal access token을 대입합니다.
-4. `xquare_role_arn`: 4번에서 발급받은 xquare role key를 대입합니다.
-5. `buildargs`: 도커 이미지 빌드시 설정 될 build args(환경변수)를 각 줄마다 구분하여 입력합니다.
+4. `access_key`: 4번에서 발급받은 access key를 대입합니다.
+5. `buildargs`(선택): 도커 이미지 빌드시 설정 될 build args를 각 줄마다 구분하여 입력합니다.
 
 ### yarn build
 
@@ -108,9 +104,8 @@ jobs:
       - name: Deploy to xquare
         uses: team-xquare/xquare-deployment-action@master 
         with:
-          service_type: be
           environment: prod
-          xquare_role_arn: ${{ secrets.XQUARE_ROLE_ARN }}
+          access_key: ${{ secrets.ACCESS_KEY }}
           github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           build_args: |
               DB_USERNAME=${{ secrets.DB_USERNAME }}
@@ -120,5 +115,5 @@ jobs:
           
 ```
 
-1. `yarn_docker_build`: `yarn docker build`를 사용하는 경우 true로 지정합니다.
-2. `yarn_workspace`: yarn docker build에서 workspace를 지정해야하는 경우 해당 workspace의 이름을 입력합니다.
+1. `yarn_docker_build`(선택): `yarn docker build`를 사용하는 경우 true로 지정합니다.
+2. `yarn_workspace`(선택): yarn docker build에서 workspace를 지정해야하는 경우 해당 workspace의 이름을 입력합니다.
