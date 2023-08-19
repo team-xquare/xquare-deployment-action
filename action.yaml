@@ -50,6 +50,7 @@ runs:
       with:
         access_key: ${{ inputs.access_key }}
         project_name: ${{ env.name }}
+        project_type: ${{ env.type }}
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
