@@ -8,7 +8,10 @@ inputs:
   project_name:
     description: 'Name of project'
     required: true
-    
+  project_type:
+    description: 'Type of project'
+    required: true
+
 runs:
   using: 'composite'
   steps:
@@ -31,9 +34,11 @@ runs:
 
         repository=${{ github.repository }}
         owner_name=${{ github.repository_owner }}
+
         url="https://prod-server.xquare.app/project-secret-manager/verify\
         ?access-key=$(urlencode ${{ inputs.access_key }})\
         &project-name=$(urlencode ${{ inputs.project_name }})\
+        &project-type=$(urlencode ${{ inputs.project_type }})\
         &repository=$(urlencode $owner_name)%2F${repository#$owner_name/}"
 
         echo $url
