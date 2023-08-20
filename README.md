@@ -18,6 +18,7 @@ Action을 수행했을 때 이뤄지는 동작은 아래와 같습니다.
 config:
   name: dms
   service_type: be
+  port: 8080
   prefix: "/domitory"
   # domain: 
   #   prod: dms.xquare.app
@@ -27,6 +28,8 @@ config:
 - `name` : 프로젝트의 이름을 지정합니다. 다른 프로젝트와 겹치지 않는 유일한 이름을 사용해야 합니다.
     다른 프로젝트와 겹치지 않는 유일한 접두사를 사용해야합니다.
 - `service_type`: 서비스의 타입입니다. (fe 또는 be)
+- `port`: 컨테이너에서 expose할 port입니다.
+  - 2개 이상의 port를 사용해야 하는 경우 teamxquare@dsm.hs.kr로 문의 바랍니다.
 - `prefix` : 프로젝트에 접근하기 위한 접두사를 지정합니다. prefix 값이 `/domitory`인 경우, 서버에서 받는 요청의 모든 경로가 `/domitory`로 시작해야 합니다. (ex. `/domitory/study-room`, `/domitory/remain`)
   - 배포시 전체 url은 https://stag-server.xquare.app/domitory 또는 https://prod-server.xquare.app/domitory 가 됩니다.
 - `domain` : 프로젝트에 접근하기 위한 `xquare.app` 하위의 서브도메인을 지정합니다. (ex `dms.xquare.app`, `dms-stag.xquare.app`)
