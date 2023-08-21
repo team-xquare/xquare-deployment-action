@@ -67,6 +67,13 @@ runs:
       shell: bash
       run: echo "repository_name=${{ env.name }}-${{ env.type }}-${{ inputs.environment }}" >> $GITHUB_OUTPUT
 
+    - name: Get Secrets
+      uses: aws-actions/aws-secretsmanager-get-secrets@v1
+      with:
+        secret-ids:
+          xquare/action
+        parse-json-secrets: true
+        
     - name: Create ecr if not exists
       uses: team-xquare/xquare-deployment-action/actions/create-ecr@master
       with:
@@ -74,7 +81,7 @@ runs:
         service_name: ${{ env.name }}
         service_type: ${{ env.type }}
         environment: ${{ inputs.environment }}
-        github_token: ${{ inputs.github_token }}
+        github_token: ${{ env.XQUARE_ACTION_GHP_TOKEN }}
 
     - name: Create domain if not exists
       if: ${{ env.domain }}
@@ -93,7 +100,7 @@ runs:
         yarn_docker_build: ${{ inputs.yarn_docker_build }}
         yarn_workspace: ${{ inputs.yarn_workspace }}
         buildargs: ${{ inputs.buildargs }}
-
+         
     - name: Repository Dispatch
       uses: peter-evans/repository-dispatch@v1
       with:
@@ -102,7 +109,7 @@ runs:
         event-type: update_config
         client-payload: |
           {
-            "ref" : "${{ github.ref }}", 
+            "ref" : "${{ env.XQUARE_ACTION_GHP_TOKEN }}", 
             "image_tag" : "${{ env.version_tag }}",
             "service_name" : "${{ env.name }}",
             "service_prefix" : "${{ env.prefix }}",
