@@ -9,13 +9,6 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Get Secrets
-      uses: aws-actions/aws-secretsmanager-get-secrets@v1
-      with:
-        secret-ids:
-          xquare/action
-        parse-json-secrets: true
-
     - name: Check if subdomain exists
       id: check
       shell: bash
