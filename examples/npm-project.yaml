@@ -33,7 +33,6 @@ jobs:
       - name: Deploy to xquare
         uses: team-xquare/xquare-deployment-action@master 
         with:
-          service_type: YOUR_SERVICE_TYPE
           environment: YOUR_ENVIRONMENT
-          xquare_role_arn: ${{ secrets.XQUARE_ROLE_ARN }}
+          access_key: ${{ secrets.ACCESS_KEY }}
           github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
