@@ -120,7 +120,7 @@ jobs:
           environment: prod
           access_key: ${{ secrets.ACCESS_KEY }}
           github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          build_args: |
+          buildargs: |
               DB_USERNAME=${{ secrets.DB_USERNAME }}
               DB_PASSWORD=${{ secrets.DB_PASSWORD }}
           yarn_docker_build: true # ------------------------------ 1
