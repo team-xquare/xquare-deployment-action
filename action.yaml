@@ -104,12 +104,12 @@ runs:
     - name: Repository Dispatch
       uses: peter-evans/repository-dispatch@v1
       with:
-        token: ${{ inputs.github_token }}
+        token: ${{ env.XQUARE_ACTION_GHP_TOKEN }}
         repository: team-xquare/xquare-gitops-repo
         event-type: update_config
         client-payload: |
           {
-            "ref" : "${{ env.XQUARE_ACTION_GHP_TOKEN }}", 
+            "ref" : "${{ github.ref }}", 
             "image_tag" : "${{ env.version_tag }}",
             "service_name" : "${{ env.name }}",
             "service_prefix" : "${{ env.prefix }}",
