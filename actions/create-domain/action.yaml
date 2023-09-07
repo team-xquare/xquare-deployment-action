@@ -30,7 +30,7 @@ runs:
           --data '{
             "type": "CNAME",
             "name": "${{ inputs.domain }}",
-            "content": "ab9687f57ef5a489eb11cb6ba3bcca3f-f0d24e08b86fff6f.elb.ap-northeast-2.amazonaws.com",
+            "content": "a287d593bd0ed4b3689b22b89933a6ef-c7a8a6b01cc76050.elb.ap-northeast-2.amazonaws.com",
             "ttl": 1,
             "proxied": false
           }'
