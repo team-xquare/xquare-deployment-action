@@ -57,7 +57,7 @@ config:
 
 ## 4. xquare access key 발급
 
-- [구글폼](https://forms.gle/Wocn5fE5WqYWEUGL8)을 작성하여 deployment action access key를 발급 받습니다.
+- [신청폼](https://project.xquare.app/request)을 작성하여 deployment action access key를 발급 받습니다.
 - 받은 key를 repository의 Secret으로 등록합니다.
 
 <img width="800" alt="image" src="https://github.com/team-xquare/xquare-deployment-action/assets/81006587/54bf0296-a658-4d6c-ad29-049d25a53694">
