@@ -25,9 +25,8 @@ config:
   #   stag: dms-stag.xquare.app
 ```
 
-- `name` : 프로젝트의 이름을 지정합니다. 다른 프로젝트와 겹치지 않는 유일한 이름을 사용해야 합니다.
-    다른 프로젝트와 겹치지 않는 유일한 접두사를 사용해야합니다.
-- `service_type`: 서비스의 타입입니다. (fe 또는 be)
+- `name` : 신청한 프로젝트의 영문 이름입니다.
+- `service_type`: 신청한 서비스의 타입입니다. (fe 또는 be)
 - `port`: 컨테이너에서 expose할 port입니다.
   - 2개 이상의 port를 사용해야 하는 경우 teamxquare@dsm.hs.kr로 문의 바랍니다.
 - `prefix` : 프로젝트에 접근하기 위한 접두사를 지정합니다. prefix 값이 `/domitory`인 경우, 서버에서 받는 요청의 모든 경로가 `/domitory`로 시작해야 합니다. (ex. `/domitory/study-room`, `/domitory/remain`)
@@ -66,9 +65,8 @@ config:
 
 ## 5. Git Action 작성
 
-- 배포가 필요한 경우에 대한 Git Action을 작성합니다.
+- 배포에 대한 Git Action을 작성합니다.
   - 자신의 프로젝트에 맞게 설정해주세요.
-
 - xquare action을 넣을 job 아래에 OIDC 권한을 허용해줍니다.
   
 ```yml
@@ -88,7 +86,6 @@ jobs:
 ```
 
 - Docker build 이전에 필요한 동작이 있다면 추가합니다. [(참고)](https://github.com/team-xquare/xquare-deployment-action/tree/master/examples)
-
 - xquare-deployment-action을 참조하여 사용합니다.
 
 ### 기본 입력 필드
