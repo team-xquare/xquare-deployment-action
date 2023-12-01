@@ -103,10 +103,10 @@ jobs:
           
 ```
 
-2. `environment`: 실행 환경을 정의합니다. `prod`(운영 환경)혹은 `stag`(테스트 환경) 중 한 가지를 사용할 수 있습니다.
-3. `github_token`: 3번에서 발급받은 github personal access token을 대입합니다.
-4. `access_key`: 4번에서 발급받은 access key를 대입합니다.
-5. `buildargs`(선택): 도커 이미지 빌드시 설정 될 build args를 각 줄마다 구분하여 입력합니다.
+1. `environment`: 실행 환경을 정의합니다. `prod`(운영 환경)혹은 `stag`(테스트 환경) 중 한 가지를 사용할 수 있습니다.
+2. `github_token`: 3번에서 발급받은 github personal access token을 대입합니다.
+3. `access_key`: 4번에서 발급받은 access key를 대입합니다.
+4. `buildargs`(선택): 도커 이미지 빌드시 설정 될 build args를 각 줄마다 구분하여 입력합니다.
 
 ### yarn build
 
