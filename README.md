@@ -42,24 +42,25 @@ config:
 
 ## 3. Github token 발급
 
-- Github [Personal Access Toekn](https://docs.github.com/ko/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)을 발급받아 repository의 Secret으로 등록합니다.
+- Github [Personal Access Token](https://docs.github.com/ko/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)을 발급받습니다.
 
 - `repo` 권한을 반드시 포함해야 합니다.
 
-<img width="800" alt="image" src="https://github.com/team-xquare/xquare-deployment-action/assets/81006587/2354c73f-1fdc-48cd-9447-96063103b30e">
+<img width="630" alt="image" src="https://github.com/team-xquare/xquare-deployment-action/assets/81006587/2354c73f-1fdc-48cd-9447-96063103b30e">
 
----
+- 발급받은 Personal Access Token을 Repository의 Secret으로 등록합니다. (Repository Setting > Secrets and variables > Actions)
 
-<img width="800" alt="image" src="https://github.com/team-xquare/xquare-deployment-action/assets/81006587/72203e28-5ea6-4d8f-908c-1a1afeefecf0">
+<img width="594" alt="image" src="https://github.com/team-xquare/xquare-deployment-action/assets/81006587/f90b221d-77ce-4d10-9add-b57b7c0398f4">
 
 ---
 
 ## 4. xquare access key 발급
 
 - [신청폼](https://project.xquare.app/request)을 작성하여 deployment action access key를 발급 받습니다.
-- 받은 key를 repository의 Secret으로 등록합니다.
+- 발급받은 Access key를 Repository의 Secret으로 등록합니다. (Repository Setting > Secrets and variables > Actions)
 
-<img width="800" alt="image" src="https://github.com/team-xquare/xquare-deployment-action/assets/81006587/54bf0296-a658-4d6c-ad29-049d25a53694">
+<img width="592" alt="image" src="https://github.com/team-xquare/xquare-deployment-action/assets/81006587/42545b8c-2f44-48c5-91be-f15977adf659">
+
 
 ---
 
@@ -97,7 +98,7 @@ jobs:
           environment: prod # ------------------------------------ 1
           access_key: ${{ secrets.ACCESS_KEY }} # ---------------- 2
           github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }} # --- 3
-          build_args: | # ---------------------------------------- 4
+          buildargs: | # ---------------------------------------- 4
               DB_USERNAME=${{ secrets.DB_USERNAME }}
               DB_PASSWORD=${{ secrets.DB_PASSWORD }}
           
@@ -115,7 +116,7 @@ jobs:
         uses: team-xquare/xquare-deployment-action@master 
         with:
           environment: prod
-          access_key: ${{ secrets.ACCESS_KEY }}
+          access_key: ${{ secrets.XQUARE_ACCESS_KEY }}
           github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           buildargs: |
               DB_USERNAME=${{ secrets.DB_USERNAME }}
