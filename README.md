@@ -38,9 +38,9 @@ config:
 
 ## 2. Dockerfile 생성
 
-- git repository에 [Dockerfile](https://docs.docker.com/engine/reference/builder/)을 생성합니다.
+- GitHub repository에 [Dockerfile](https://docs.docker.com/engine/reference/builder/)을 생성합니다.
 
-## 3. Github token 발급
+## 3. GitHub token 발급
 
 - Github [Personal Access Token](https://docs.github.com/ko/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)을 발급받습니다.
 
