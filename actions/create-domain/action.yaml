@@ -34,3 +34,15 @@ runs:
             "ttl": 1,
             "proxied": false
           }'
+
+    - name: Terraform Repository Dispatch if not exists
+      if: steps.check.outputs.domain_exists == 'false'
+      uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ inputs.github_token }}
+        repository: team-xquare/xquare-infrastructure-global
+        event-type: add_domain
+        client-payload: |
+          {
+            "domain" : "${{ inputs.domain }}"
+          }
