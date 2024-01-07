@@ -33,3 +33,8 @@ jobs:
           environment: prod
           access_key: ${{ secrets.ACCESS_KEY }}
           github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          buildargs: |
+            MYSQL_HOST=${{ secrets.MYSQL_HOST }}
+            MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }}
+            MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+            REDIS_HOST=${{ secrets.REDIS_HOST }}
