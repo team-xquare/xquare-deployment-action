@@ -88,6 +88,7 @@ runs:
       uses: team-xquare/xquare-deployment-action/actions/create-domain@master
       with:
         domain: ${{ env.domain }}
+        github_token: ${{ env.XQUARE_ACTION_GHP_TOKEN }}
 
     - name: Docker push
       id: docker
