@@ -90,6 +90,15 @@ runs:
         domain: ${{ env.domain }}
         github_token: ${{ env.XQUARE_ACTION_GHP_TOKEN }}
 
+    - name: Create dockerfile if not exists
+      uses: team-xquare/xquare-deployment-action/actions/create-dockerfile@master
+      with:
+        service_type: ${{ env.type }}
+        service_name: ${{ env.name }}
+        environment: ${{ inputs.environment }}
+        base_url: ${{ inputs.base_url }}
+        yarn_docker_build: ${{ inputs.yarn_docker_build }}
+
     - name: Docker push
       id: docker
       uses: team-xquare/xquare-deployment-action/actions/docker-push@master

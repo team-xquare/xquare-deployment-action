@@ -1,0 +1,47 @@
+name: 'Create Dockerfile'
+
+description: 'Create Dockerfile'
+inputs:
+  service_type:
+    description: 'Type of service'
+    required: true
+  service_name:
+    description: 'Name of service'
+    required: true
+  environment:
+    description: 'Environment classification for servers (prod/stag)'
+    required: true
+  base_url:
+    description: 'Base url of code'
+    required: true
+  yarn_docker_build:
+    description: 'Boolean value indicating whether to use the "yarn docker build" command instead of the "docker build" command'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Check if dockerfile exists
+      id: check
+      shell: bash
+      run: |
+        file_path="{{ inputs.base_url }}/Dockerfile"
+        if [ -e $file_path ] then
+          echo "dockerfile_exists=true" >> $GITHUB_OUTPUT
+        else
+          echo "dockerfile_exists=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Create Dockerfile
+      if: steps.check.outputs.dockerfile_exists == 'false' && {{ inputs.yarn_docker_build }} == 'false'
+      uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ env.XQUARE_ACTION_GHP_TOKEN }}
+        repository: team-xquare/xquare-dockerfile
+        event-type: create_dockerfile
+        client-payload: |
+          {
+            "service_name" : "${{ inputs.service_name }}",
+            "service_type" : "${{ inputs.service_type }}",
+            "environment" : "${{ inputs.environment }}"
+          }
