@@ -26,7 +26,7 @@ runs:
       shell: bash
       run: |
         file_path="{{ inputs.base_url }}/Dockerfile"
-        if [ -e $file_path ] then
+        if [ -e $file_path ]; then
           echo "dockerfile_exists=true" >> $GITHUB_OUTPUT
         else
           echo "dockerfile_exists=false" >> $GITHUB_OUTPUT
