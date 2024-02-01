@@ -45,3 +45,12 @@ runs:
             "service_type" : "${{ inputs.service_type }}",
             "environment" : "${{ inputs.environment }}"
           }
+
+    - name: Download Dockerfile
+      id: download
+      shell: bash
+      run: |
+        echo "Waiting for Dockerfile creating.."
+        sleep 25
+        dockerfile_dir=${{ inputs.environment }}/${{ inputs.service_name }}-${{ inputs.service_type }}"
+        curl -O -L https://raw.githubusercontent.com/team-xquare/xquare-dockerfile/main/$dockerfile_dir/Dockerfile
