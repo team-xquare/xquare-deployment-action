@@ -30,6 +30,10 @@ inputs:
   buildargs:
     description: 'Use buildargs when you want to pass a list of environment variables to docker as build-args'
     required: false
+  build_path:
+    description: 'build_path when your project is configured multi-module'
+    default: '.'
+    required: false
 
 runs:
   using: 'composite'
@@ -98,6 +102,7 @@ runs:
         environment: ${{ inputs.environment }}
         base_url: ${{ inputs.base_url }}
         yarn_docker_build: ${{ inputs.yarn_docker_build }}
+        build_path: ${{ inputs.build_path }}
         service_port: ${{ env.port }}
 
     - name: Docker push

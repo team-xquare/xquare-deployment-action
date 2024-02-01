@@ -20,6 +20,10 @@ inputs:
   service_port:
     description: 'Port of service'
     required: true
+  build_path:
+    description: 'build_path when your project is configured multi-module'
+    default: '.'
+    required: false
 
 runs:
   using: 'composite'
@@ -50,6 +54,7 @@ runs:
             "service_name" : "${{ inputs.service_name }}",
             "service_type" : "${{ inputs.service_type }}",
             "environment" : "${{ inputs.environment }}",
+            "build_path" : "${{ inputs.build_path }}"
             "service_port" : "${{ env.port }}"
           }
 
