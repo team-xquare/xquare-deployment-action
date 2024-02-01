@@ -1,6 +1,7 @@
 name: 'Create Dockerfile'
 
 description: 'Create Dockerfile'
+
 inputs:
   service_type:
     description: 'Type of service'
@@ -28,22 +29,22 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Check if dockerfile exists
+    - name: Check if Dockerfile exists and yarn docker build is false
       id: check
       shell: bash
       run: |
         file_path="${{ inputs.base_url }}/Dockerfile"
         echo $file_path
-        if [ -e $file_path ]; then
-          echo "Dockerfile이 존재합니다"
-          echo "dockerfile_exists=true" >> $GITHUB_OUTPUT
+        if [ -e $file_path ] && [ "${{ inputs.yarn_docker_build }}" == "false" ]; then
+          echo "Dockerfile이 존재하고 yarn docker build가 false입니다."
+          echo "dockerfile_and_yarn_build_false=true" >> $GITHUB_OUTPUT
         else
-          echo "Dockerfile이 존재하지 않습니다"
-          echo "dockerfile_exists=false" >> $GITHUB_OUTPUT
+          echo "Dockerfile이 존재하지 않거나 yarn docker build가 true입니다."
+          echo "dockerfile_and_yarn_build_false=false" >> $GITHUB_OUTPUT
         fi
 
-    - name: Create Dockerfile
-      if: steps.check.outputs.dockerfile_exists == 'false'
+    - name: Create Dockerfile and Download if conditions are met
+      if: steps.check.outputs.dockerfile_and_yarn_build_false == 'false'
       uses: peter-evans/repository-dispatch@v1
       with:
         token: ${{ env.XQUARE_ACTION_GHP_TOKEN }}
@@ -59,7 +60,7 @@ runs:
           }
 
     - name: Download Dockerfile
-      if: steps.check.outputs.dockerfile_exists == 'false'
+      if: steps.check.outputs.dockerfile_and_yarn_build_false == 'false'
       id: download
       shell: bash
       run: |
