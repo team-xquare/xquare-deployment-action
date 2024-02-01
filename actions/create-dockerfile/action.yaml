@@ -34,10 +34,9 @@ runs:
           echo "Dockerfile이 존재하지 않습니다"
           echo "dockerfile_exists=false" >> $GITHUB_OUTPUT
         fi
-        
 
     - name: Create Dockerfile
-      if: steps.check.outputs.dockerfile_exists == 'false' && ${{ inputs.yarn_docker_build }} == 'false'
+      if: steps.check.outputs.dockerfile_exists == 'false'
       uses: peter-evans/repository-dispatch@v1
       with:
         token: ${{ env.XQUARE_ACTION_GHP_TOKEN }}
@@ -51,7 +50,7 @@ runs:
           }
 
     - name: Download Dockerfile
-      if: steps.check.outputs.dockerfile_exists == 'false' && ${{ inputs.yarn_docker_build }} == 'false'
+      if: steps.check.outputs.dockerfile_exists == 'false'
       id: download
       shell: bash
       run: |
