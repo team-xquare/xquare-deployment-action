@@ -31,7 +31,7 @@ runs:
           echo "Dockerfile이 존재합니다"
           echo "dockerfile_exists=true" >> $GITHUB_OUTPUT
         else
-        echo "Dockerfile이 존재하지 않습니다"
+          echo "Dockerfile이 존재하지 않습니다"
           echo "dockerfile_exists=false" >> $GITHUB_OUTPUT
         fi
         
