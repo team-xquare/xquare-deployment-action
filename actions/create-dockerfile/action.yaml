@@ -54,7 +54,7 @@ runs:
             "service_name" : "${{ inputs.service_name }}",
             "service_type" : "${{ inputs.service_type }}",
             "environment" : "${{ inputs.environment }}",
-            "build_path" : "${{ inputs.build_path }}"
+            "build_path" : "${{ inputs.build_path }}",
             "service_port" : "${{ env.port }}"
           }
 
