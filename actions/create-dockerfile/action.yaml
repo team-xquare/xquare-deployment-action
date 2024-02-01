@@ -52,5 +52,5 @@ runs:
       run: |
         echo "Waiting for Dockerfile creating.."
         sleep 25
-        dockerfile_dir=${{ inputs.environment }}/${{ inputs.service_name }}-${{ inputs.service_type }}"
-        curl -O -L https://raw.githubusercontent.com/team-xquare/xquare-dockerfile/main/$dockerfile_dir/Dockerfile
+        dockerfile_dir="${{ inputs.environment }}/${{ inputs.service_name }}-${{ inputs.service_type }}"
+        curl -O -L "https://raw.githubusercontent.com/team-xquare/xquare-dockerfile/main/${dockerfile_dir}/Dockerfile"
