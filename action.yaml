@@ -98,6 +98,7 @@ runs:
         environment: ${{ inputs.environment }}
         base_url: ${{ inputs.base_url }}
         yarn_docker_build: ${{ inputs.yarn_docker_build }}
+        service_port: ${{ env.port }}
 
     - name: Docker push
       id: docker
