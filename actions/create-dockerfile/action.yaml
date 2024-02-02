@@ -45,6 +45,7 @@ runs:
         
         if ${{ inputs.yarn_docker_build }} == 'true': then
           echo "dockerfile_and_yarn_build_false=true" >> $GITHUB_OUTPUT
+        fi
 
     - name: Create Dockerfile and Download if conditions are met
       if: steps.check.outputs.dockerfile_and_yarn_build_false == 'false'
