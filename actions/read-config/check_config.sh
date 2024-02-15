@@ -45,5 +45,5 @@ service_type_uppercase=$(echo "$service_type" | tr '[:lower:]' '[:upper:]')
 encoded_domain=$(echo -n "$domain" | base64)
 
 curl -X PUT "$endpoint" \
-  -d "container_name=$container_name&service_type=$service_type_uppercase&prefix=$prefix&domain=$encoded_domain" \
+  -d "container_name=$name&service_type=$service_type_uppercase&prefix=$prefix&domain=$encoded_domain" \
   -v
