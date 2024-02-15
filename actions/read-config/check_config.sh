@@ -42,5 +42,7 @@ endpoint="https://prod-server.xquare.app/merge/deploy"
 
 service_type_uppercase=$(echo "$service_type" | tr '[:lower:]' '[:upper:]')
 
+encoded_domain=$(echo -n "$domain" | base64)
+
 curl -X PUT "$endpoint" \
-  -d "container_name=$container_name&service_type=$service_type_uppercase&prefix=$prefix&domain=$domain"
+  -d "container_name=$container_name&service_type=$service_type_uppercase&prefix=$prefix&domain=encoded_domain"
