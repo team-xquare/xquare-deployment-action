@@ -41,5 +41,5 @@ echo "port=$(readValue ".config.port")" >> $GITHUB_ENV
 endpoint="https://prod-server.xquare.app/merge/deploy/config"
 
 curl -X PUT "$endpoint" \
-  -d "container_name=$(readValue ".config.name")&service_type=echo "$(readValue ".config.service_type")" | tr '[:lower:]' '[:upper:]'&prefix=$(readValue ".config.prefix")&domain=echo -n "$(readValue "${domain_key}")" | base64" \
+  -d "container_name=$(readValue ".config.name")&service_type=$(echo "$(readValue ".config.service_type")" | tr '[:lower:]' '[:upper:]')&prefix=$(readValue ".config.prefix")&domain=$(echo -n "$(readValue "${domain_key}")" | base64") \
   -v
