@@ -38,7 +38,7 @@ echo "type=$(readValue ".config.service_type")" >> $GITHUB_ENV
 echo "port=$(readValue ".config.port")" >> $GITHUB_ENV
 
 
-endpoint="https://prod-server.xquare.app/merge/deploy"
+endpoint="https://prod-server.xquare.app/merge/deploy/config"
 
 service_type_uppercase=$(echo "$service_type" | tr '[:lower:]' '[:upper:]')
 
