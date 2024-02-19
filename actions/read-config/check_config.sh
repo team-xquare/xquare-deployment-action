@@ -45,4 +45,4 @@ type=$(readValue ".config.service_type")
 
 endpoint="https://prod-server.xquare.app/merge/deploy/config"
 
-curl -X PUT "$endpoint?container_name=$name&prefix=$prefix&domain=$domain_encoded&service_type=$type"
+curl -X PUT "$endpoint?container_name=$name&prefix=$prefix&domain=$domain_encoded&service_type=$type" -v
