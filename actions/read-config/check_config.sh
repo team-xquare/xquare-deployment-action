@@ -37,9 +37,12 @@ echo "domain=$(readValue "${domain_key}")" >> $GITHUB_ENV
 echo "type=$(readValue ".config.service_type")" >> $GITHUB_ENV
 echo "port=$(readValue ".config.port")" >> $GITHUB_ENV
 
-#
-#endpoint="https://prod-server.xquare.app/merge/deploy/config"
-#
-#curl -X PUT "$endpoint" \
-#  -d "container_name=$(readValue \".config.name\")&service_type=$(echo \"$(readValue \".config.service_type\")\" | tr '[:lower:]' '[:upper:]')&prefix=$(readValue \".config.prefix\")&domain=$(echo -n \"$(readValue \"${domain_key}\")\" | base64)" \
-#  -v
+name=$(readValue ".config.name")
+prefix=$(readValue ".config.prefix")
+domain=$(readValue "${domain_key}")
+domain_encoded=$(echo -n "$domain" | base64)
+type=$(readValue ".config.service_type")
+
+endpoint="https://prod-server.xquare.app/merge/deploy/config"
+
+curl -X PUT "$endpoint?container_name=$name&prefix=$prefix&domain=$domain_encoded&service_type=$type"
