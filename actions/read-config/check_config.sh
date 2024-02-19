@@ -39,8 +39,14 @@ echo "port=$(readValue ".config.port")" >> $GITHUB_ENV
 
 name=$(readValue ".config.name")
 prefix=$(readValue ".config.prefix")
+
 domain=$(readValue "${domain_key}")
-domain_encoded=$(echo -n "$domain" | base64)
+if [ -z "$domain" ]; then
+    domain_encoded=""
+else
+    domain_encoded=$(echo -n "$domain" | base64)
+fi
+
 type=$(readValue ".config.service_type")
 type_uppercase=$(echo "$type" | tr '[:lower:]' '[:upper:]')
 
