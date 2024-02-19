@@ -26,7 +26,7 @@ done
 domain_key=".config.domain.$ENVIRONMENT"
 domain_value=$(readValue "${domain_key}")
 
-if [[ -z $domain_value && $domain_value != *.xquare.app && $domain_value != *.dsm-pick.com ]]; then
+if [[ -n $domain_value && $domain_value != *.xquare.app && $domain_value != *.dsm-pick.com ]]; then
   echo "Error: The domain ($domain_value) does not end with '.xquare.app' or '.dsm-pick.com'."
   exit 1
 fi
@@ -41,10 +41,10 @@ name=$(readValue ".config.name")
 prefix=$(readValue ".config.prefix")
 
 domain=$(readValue "${domain_key}")
-if [ "$domain" eq "null" ]; then
-    domain_encoded=""
-else
+if [[ -n $domain ]]; then
     domain_encoded=$(echo -n "$domain" | base64)
+else
+    domain_encoded=""
 fi
 
 type=$(readValue ".config.service_type")
