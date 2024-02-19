@@ -42,7 +42,8 @@ prefix=$(readValue ".config.prefix")
 domain=$(readValue "${domain_key}")
 domain_encoded=$(echo -n "$domain" | base64)
 type=$(readValue ".config.service_type")
+type_uppercase=$(echo "$type" | tr '[:lower:]' '[:upper:]')
 
 endpoint="https://prod-server.xquare.app/merge/deploy/config"
 
-curl -X PUT "$endpoint?container_name=$name&prefix=$prefix&domain=$domain_encoded&service_type=$type" -v
+curl -X PUT "$endpoint?container_name=$name&prefix=$prefix&domain=$domain_encoded&service_type=$type_uppercase" -v
