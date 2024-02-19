@@ -41,7 +41,7 @@ name=$(readValue ".config.name")
 prefix=$(readValue ".config.prefix")
 
 domain=$(readValue "${domain_key}")
-if [ -z "$domain" ]; then
+if [ "$domain" eq "null" ]; then
     domain_encoded=""
 else
     domain_encoded=$(echo -n "$domain" | base64)
