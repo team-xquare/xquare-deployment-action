@@ -12,6 +12,9 @@ inputs:
   base_url:
     description: 'Base url of code'
     default: '.'
+  base_path:
+    description: 'Base url of code'
+    default: '.'
   config_file_path:
     description: 'Path of Xquare Config file'
     default: '.xquare/config.yaml'
@@ -94,13 +97,21 @@ runs:
         domain: ${{ env.domain }}
         github_token: ${{ env.XQUARE_ACTION_GHP_TOKEN }}
 
+    - name: Get base path
+      run: |
+        if [ "${{ inputs.base_url }}" = "." ] && [ "${{ inputs.base_path }}" != "." ]; then
+          echo "base_path=${{ inputs.base_path }}" >> $GITHUB_ENV
+        else
+          echo "base_path=${{ inputs.base_url }}" >> $GITHUB_ENV
+        fi
+
     - name: Create dockerfile if not exists
       uses: team-xquare/xquare-deployment-action/actions/create-dockerfile@master
       with:
         service_type: ${{ env.type }}
         service_name: ${{ env.name }}
         environment: ${{ inputs.environment }}
-        base_url: ${{ inputs.base_url }}
+        base_url: ${{ env.base_path }}
         yarn_docker_build: ${{ inputs.yarn_docker_build }}
         build_path: ${{ inputs.build_path }}
         service_port: ${{ env.port }}
