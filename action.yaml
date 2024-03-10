@@ -98,6 +98,7 @@ runs:
         github_token: ${{ env.XQUARE_ACTION_GHP_TOKEN }}
 
     - name: Get base path
+      shell: bash
       run: |
         if [ "${{ inputs.base_url }}" = "." ] && [ "${{ inputs.base_path }}" != "." ]; then
           echo "base_path=${{ inputs.base_path }}" >> $GITHUB_ENV
