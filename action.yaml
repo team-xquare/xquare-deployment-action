@@ -106,17 +106,6 @@ runs:
           echo "base_path=${{ inputs.base_url }}" >> $GITHUB_ENV
         fi
 
-    - name: Create dockerfile if not exists
-      uses: team-xquare/xquare-deployment-action/actions/create-dockerfile@master
-      with:
-        service_type: ${{ env.type }}
-        service_name: ${{ env.name }}
-        environment: ${{ inputs.environment }}
-        base_url: ${{ env.base_path }}
-        yarn_docker_build: ${{ inputs.yarn_docker_build }}
-        build_path: ${{ inputs.build_path }}
-        service_port: ${{ env.port }}
-
     - name: Docker push
       id: docker
       uses: team-xquare/xquare-deployment-action/actions/docker-push@master
