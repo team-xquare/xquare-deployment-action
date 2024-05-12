@@ -48,4 +48,4 @@ runs:
         #   exit 1
         # fi
 
-        echo "xquare_role_arn=arn:aws:iam::471407337433:role/xquare-deployer-git-oidc-role" >> $GITHUB_ENV
+        echo "xquare_role_arn=arn:aws:iam::786584124104:role/xquare-deployer-git-oidc-role" >> $GITHUB_ENV
