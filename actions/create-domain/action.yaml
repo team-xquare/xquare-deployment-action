@@ -23,21 +23,6 @@ runs:
           echo "domain_exists=true" >> $GITHUB_OUTPUT
         fi
 
-    - name: Create Domain
-      if: steps.check.outputs.domain_exists == 'false'
-      shell: bash
-      run: |
-        curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ env.XQUARE_ACTION_ZONE_ID }}/dns_records" \
-          -H "Authorization: Bearer ${{ env.XQUARE_ACTION_CLOUDFLARE_API_KEY }}" \
-          -H "Content-Type: application/json" \
-          --data '{
-            "type": "CNAME",
-            "name": "${{ inputs.domain }}",
-            "content": "a0f66cb438a614b47b67f07be7a7ee63-f0e92b559f5f8961.elb.ap-northeast-2.amazonaws.com",
-            "ttl": 1,
-            "proxied": false
-          }'
-
     - name: Terraform Repository Dispatch if not exists
       if: steps.check.outputs.domain_exists == 'false'
       uses: peter-evans/repository-dispatch@v1
