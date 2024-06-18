@@ -37,6 +37,18 @@ inputs:
     description: 'build_path when your project is configured multi-module'
     default: '.'
     required: false
+  language:
+    description: 'Language of code'
+    default: 'null'
+    required: false
+  critical_service:
+    description: 'Deploy ONDEMAND boolean value'
+    default: false
+    required: false
+  private_service:
+    description: 'Used when exposure to the outside is not possible.'
+    default: false
+    required: false
 
 runs:
   using: 'composite'
@@ -133,5 +145,8 @@ runs:
             "service_domain" : "${{ env.domain }}",
             "service_type" : "${{ env.type }}",
             "service_port" : "${{ env.port }}",
-            "environment" : "${{ inputs.environment }}"
+            "environment" : "${{ inputs.environment }}",
+            "language" : "${{ inputs.language }}",
+            "critical_service" : "${{ inputs.critical_service }}",
+            "private_service" : "${{ inputs.private_service }}"
           }
