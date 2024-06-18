@@ -146,7 +146,6 @@ runs:
             "service_type" : "${{ env.type }}",
             "service_port" : "${{ env.port }}",
             "environment" : "${{ inputs.environment }}",
-            "language" : "${{ inputs.language }}",
             "critical_service" : "${{ inputs.critical_service }}",
             "private_service" : "${{ inputs.private_service }}"
           }
