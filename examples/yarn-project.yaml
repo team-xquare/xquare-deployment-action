@@ -37,6 +37,5 @@ jobs:
         with:
           environment: prod
           access_key: ${{ secrets.ACCESS_KEY }}
-          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           yarn_docker_build: true
           # yarn_workspace: @service/example
