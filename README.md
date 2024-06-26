@@ -97,15 +97,13 @@ jobs:
         with:
           environment: prod # ------------------------------------ 1
           access_key: ${{ secrets.ACCESS_KEY }} # ---------------- 2
-          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }} # --- 3
-          buildargs: | # ---------------------------------------- 4
+          buildargs: | # ---------------------------------------- 3
               DB_USERNAME=${{ secrets.DB_USERNAME }}
               DB_PASSWORD=${{ secrets.DB_PASSWORD }}
           
 ```
 
 1. `environment`: 실행 환경을 정의합니다. `prod`(운영 환경)혹은 `stag`(테스트 환경) 중 한 가지를 사용할 수 있습니다.
-2. `github_token`: 3번에서 발급받은 github personal access token을 대입합니다.
 3. `access_key`: 4번에서 발급받은 access key를 대입합니다.
 4. `buildargs`(선택): 도커 이미지 빌드시 설정될 build args를 각 줄마다 구분하여 입력합니다.
 5. `base_path`(선택): 도커 빌드를 수행할 경로를 설정합니다.
@@ -119,7 +117,6 @@ jobs:
         with:
           environment: prod
           access_key: ${{ secrets.XQUARE_ACCESS_KEY }}
-          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           buildargs: |
               DB_USERNAME=${{ secrets.DB_USERNAME }}
               DB_PASSWORD=${{ secrets.DB_PASSWORD }}
