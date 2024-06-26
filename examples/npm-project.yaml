@@ -35,4 +35,3 @@ jobs:
         with:
           environment: stag
           access_key: ${{ secrets.ACCESS_KEY }}
-          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
