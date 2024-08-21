@@ -42,10 +42,10 @@ runs:
         &repository=$(urlencode $owner_name)%2F${repository#$owner_name/}"
 
         echo $url
-        # response=$(curl -X POST $url)
-        # if [[ "${response}" == "Unauthorized" ]]; then
-        #   echo "Unauthorized: Invalid access key or no repository is registered running the action."
-        #   exit 1
-        # fi
+        response=$(curl -X POST $url)
+        if [[ "${response}" == "Unauthorized" ]]; then
+          echo "Unauthorized: Invalid access key or no repository is registered running the action."
+          exit 1
+        fi
 
         echo "xquare_role_arn=arn:aws:iam::786584124104:role/xquare-deployer-git-oidc-role" >> $GITHUB_ENV
